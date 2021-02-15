@@ -17,9 +17,9 @@
 /////////// Includes /////////////////
 #include "Arduino.h"
 #include <Controllino.h>
+#include "Modem.h"
 #include "Conveyor.h"
-#include <Ethernet.h>
-#include <EthernetUdp.h>
+#include "ConveyorUI.h"
 
 /////////defines //////////////////////
 #define DIRECTION_PIN CONTROLLINO_D2
@@ -28,103 +28,44 @@
 #define MOTOR_PWR_PIN CONTROLLINO_R1
 #define ELECTRONICS_PWR_PIN CONTROLLINO_R0
 
+////////// Object Instantiation //////////////////
+/*************************************************************
+ * modem - local MMI represented by serial interface, WebUI by server IP and port
+ */
+IPAddress serverIP(10, 200, 20, 160);
+uint16_t serverPort = 5555;
 
-////////// Object Istantiation //////////////////
+Modem modem(&Serial, serverIP, serverPort);
+
+
 /*************************************************************
  * Conveyor
  */
 Conveyor conveyor(ELECTRONICS_PWR_PIN, MOTOR_PWR_PIN, SPEED_PIN, DIRECTION_PIN, HALL_SENSOR_PIN );
 
-
 /*************************************************************
- * UI - represented by serial interface
+ * ConveyorUI
  */
-HardwareSerial* ui;
+ConveyorUI conveyorUI(&modem, &conveyor);
+
 
 
 //////  The Arduino way ///////////////////
 void setup()
 {
 	Serial.begin(9600);
-	ui = &Serial;
-	//ui->begin(9600);
+	modem.begin();
 	conveyor.begin();
+	conveyorUI.begin();
+
 }
 
 // The loop function is called in an endless loop
 void loop()
 {
-	while(!Serial.available()){
-		conveyor.loop();
-	}
-	char cmd = Serial.read();
-	localUI(cmd);
-
+    modem.loop();
+	conveyor.loop();
+	conveyorUI.loop();
 }
 
-bool localUI(char command){
-	bool retVal = false;
-	switch (command){
-	case 'e':{
-		Serial.println("e - turn on elec");
-			conveyor.electronicsPwrOnReq();
-		}
-		retVal = true;
-		break;
-	case 'm':{
-		    Serial.println("m - turn on motor");
-			conveyor.motorPwrOnReq();
-		}
-		retVal = true;
-		break;
-	case 'o':{
-			Serial.println("o - turn off");
-			conveyor.pwrOffReq();
-		}
-		retVal = true;
-		break;
-	case '0':{
-			Serial.println("0 - speed 0");
-			conveyor.setSpeed(0);
-		}
-		retVal = true;
-		break;
-	case '1':{
-			Serial.println("1 - speed 25");
-			conveyor.setSpeed(25);
-		}
-		retVal = true;
-		break;
-	case '2':{
-		    Serial.println("2 - speed 75");
-			conveyor.setSpeed(75);
-		}
-		retVal = true;
-		break;
 
-	case '3':{
-		Serial.println("3 - speed 125");
-			conveyor.setSpeed(125);
-		}
-		retVal = true;
-		break;
-	case '4':{
-		Serial.println("4 - speed 175");
-			conveyor.setSpeed(175);
-		}
-		retVal = true;
-		break;
-	case '5':{
-		Serial.print("5 - speed 255");
-			conveyor.setSpeed(255);
-		}
-		retVal = true;
-		break;
-	case '9':{
-			Serial.println(conveyor.readHalls());
-		}
-		retVal = true;
-		break;
-	}
-	return retVal;
-}

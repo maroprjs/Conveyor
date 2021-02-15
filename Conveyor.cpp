@@ -48,9 +48,9 @@ void Conveyor::loop(){
 	if ((_electronicsPwrOnReq == false) && ( _electronicsPwrOn == true )) electronicsPwrOff();
 	if ((_motorPwrOnReq == true) && ( _motorPwrOn == false )) motorPwrOn();
 	if ((_motorPwrOnReq == false) && ( _motorPwrOn == true )) motorPwrOff();
-	if( RE(digitalRead(_hallSensorPin), _sensorPinState) ){
-		_hallSensorCount++;
-	};
+	//if( RE(digitalRead(_hallSensorPin), _sensorPinState) ){
+	//	_hallSensorCount++;
+	//};
 
 
 }
