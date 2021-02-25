@@ -25,6 +25,7 @@ void Modem::begin(){
 	if (Ethernet.linkStatus() == LinkOFF) {
 	    Serial.println("Ethernet cable is not connected.");
 	};
+	Serial.println("");
 	Serial.println(Ethernet.localIP());
 	_udp->begin(_localPort);
 }
