@@ -25,6 +25,7 @@ public:
 	HardwareSerial* mmiPort() {return _mmiPort;};
 	bool msgArrived();
 	void readMsg(char* msg);
+	void sendUdpMsg(char* msg);
 	virtual ~Modem();
 private:
 	IPAddress _serverIP;

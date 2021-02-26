@@ -71,6 +71,13 @@ void Modem::readMsg(char* msg){
 
 }
 
+void Modem::sendUdpMsg(char* msg){
+	Serial.print("tx udp: "); Serial.println(msg);
+	_udp->beginPacket(_serverIP, _serverPort);
+	_udp->write(msg);
+	_udp->endPacket();
+}
+
 
 
 Modem::~Modem() {

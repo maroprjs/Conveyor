@@ -13,14 +13,13 @@ void countHall(void) {
 	hallSensorCount++;
 }
 
-Conveyor::Conveyor(uint8_t electronicsPwrPin, uint8_t motorPwrPin, uint8_t speedPin, uint8_t directionPin, uint8_t hallSensorPin) {
+Conveyor::Conveyor(uint8_t electronicsPwrPin, uint8_t motorPwrPin, uint8_t speedPin, uint8_t hallSensorPin, uint8_t forwardPin, uint8_t reversePin) {
 	_electronicsPwrPin = electronicsPwrPin;
 	_motorPwrPin = motorPwrPin;
 	_speedPin = speedPin;
 	_hallSensorPin = hallSensorPin;
-	_directionPin = directionPin;
-	_forwardPin = FORWARD_PIN;
-	_reversePin = REVERSE_PIN;
+	_forwardPin = forwardPin;
+	_reversePin = reversePin;
 	//_conveyorOn = false;
 	//_conveyorOnReq = false;
 	_electronicsPwrOn = false;
@@ -34,6 +33,7 @@ Conveyor::Conveyor(uint8_t electronicsPwrPin, uint8_t motorPwrPin, uint8_t speed
 	_measurementInterval = HALL_SENSOR_MEAS_INTERVAL_MS;
 	_currentHallCountsPerInterval = 0;
 	_lastSpeed = SPEED_ZERO;
+	_electronicsInitialized = false;
 	_currentSpeed = SPEED_ZERO;
 	_forwardReq = true;
 	_directionChangeState = IDLE;
@@ -47,19 +47,17 @@ void Conveyor::begin(){
 	pinMode(_electronicsPwrPin, OUTPUT);
 	pinMode(_motorPwrPin, OUTPUT);
 	pinMode(_speedPin, OUTPUT);
-	pinMode(_directionPin, OUTPUT);
 	pinMode(_forwardPin, OUTPUT);
 	pinMode(_reversePin, OUTPUT);
 	pinMode(_hallSensorPin, INPUT);
 
 	digitalWrite(_electronicsPwrPin, LOW);
 	digitalWrite(_motorPwrPin, LOW);
-	digitalWrite(_directionPin, LOW); //LOW = forward
-    resumeDirectionalContacts();//for safety, those to pins always treated together
+    resumeDirectionalContacts();//for safety, those to pins always treated together, must have exclusive state
 	analogWrite(_speedPin, _lastSpeed);
 
 	attachInterrupt(digitalPinToInterrupt(_hallSensorPin), countHall, RISING);
-	_elapsedTime = millis();
+	_elapsedTime = millis(); //number of halls to be measured
 
 
 }
@@ -76,7 +74,7 @@ void Conveyor::loop(){
 		_currentHallCountsPerInterval = hallSensorCount;
 		_elapsedTime = millis();
 		hallSensorCount = 0;
-		Serial.print("motor speed: ");Serial.print(_currentHallCountsPerInterval/32);Serial.println(" rpi");
+		Serial.print("motor speed: ");Serial.print(_currentHallCountsPerInterval * RPM_FACTOR);Serial.println(" rpm");
 	};
 	if ((_forwardReq == true) && (_isForward == false)) switchDirection();
 	if ((_forwardReq == false) && (_isForward == true)) switchDirection();
@@ -127,7 +125,15 @@ void Conveyor::setSpeed(int speed){
 	//}else{
 	//	motorPwrOnReq();
 	//};
+
+	//if electronic didnt have a speed greater zero at least once and direction changed,
+	//motor will move despite zero speed settings....bug in electronics!!!
+	if (_electronicsInitialized == false){
+		if (speed > SPEED_ZERO) _electronicsInitialized = true;
+	};
+
 	speed = (speed < SPEED_ZERO) ? SPEED_ZERO : speed;
+	Serial.print("setSpeed: ");Serial.println(speed);
 	analogWrite(_speedPin, speed);
 	_currentSpeed = speed;
 }
@@ -154,6 +160,7 @@ void Conveyor::electronicsPwrOff(){
 }
 
 void Conveyor::electronicsPwrOn(){
+	_electronicsInitialized = false; //this refers to diercstion reversal and setSpeed(), which needs to be at least once at proper level before direction change
 	digitalWrite(_electronicsPwrPin, HIGH);
 	_electronicsPwrOn = true;
 	Serial.println("elecs on");
@@ -181,8 +188,18 @@ void Conveyor::moveReverseReq(){
 		Serial.println("moveReverseReq");
 }
 
+/*******************
+ *  switchDirection()
+ *
+ *  this state transition makes sure running a save procedure to avoid shortcuts
+ *  or sudden torque on the mechanics.
+ *
+ *  The function needs to be called within loop above
+ *
+ */
 void Conveyor::switchDirection(){
 	bool doesntStop = false;
+	if (_electronicsInitialized == false) return;//this refers to setSpeed() function...needs to be called at least once before ddirection change
 	if ((millis() + STATE_TRANSITION_TIME_MS) >= _nextStateTransition ){
 		switch (_directionChangeState)
 		{
@@ -198,8 +215,8 @@ void Conveyor::switchDirection(){
 			if ((_currentHallCountsPerInterval == 0) || (doesntStop == true)) {
 				releaseDirectionalContacts();
 				_directionChangeState = RESUME_DIRECTIONAL_CONTACTS;
+				if  (doesntStop == true) motorPwrOffReq(); //this certainly finished before _nextStateTransition expires
 				_nextStateTransition = millis() + STATE_TRANSITION_TIME_MS;
-				if  (doesntStop == true) motorPwrOffReq();
 			};
 			break;
 		 case RESUME_DIRECTIONAL_CONTACTS:

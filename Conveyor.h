@@ -12,13 +12,13 @@
 #include <Controllino.h>
 
 #define HALL_SENSOR_MEAS_INTERVAL_MS 1000
-#define SPEED_ZERO  10
+#define SECONDS HALL_SENSOR_MEAS_INTERVAL_MS / 1000 //if required change this with meas interval accordingly
+#define HALLS_PER_ROUND 32
+#define RPM_FACTOR 60 * SECONDS / HALLS_PER_ROUND
+#define SPEED_ZERO  10 //PWM 0 doesn't produce 0V, so we add an offset
 #define STATE_TRANSITION_TIME_MS 25
 
-//controllino doesn't set PINs below 0.5V at LOW, as required by Vetter's Faulhaber Motor,
-//hence we use two Relais contacts to switch between proper GND and +24V
-#define FORWARD_PIN CONTROLLINO_R2
-#define REVERSE_PIN CONTROLLINO_R3
+
 
 
 
@@ -32,7 +32,7 @@ class Conveyor {
 	};
 
 public:
-	Conveyor(uint8_t electronicsPwrPin, uint8_t motorPwrPin, uint8_t speedPin, uint8_t directionPin, uint8_t hallSensorPin );
+	Conveyor(uint8_t electronicsPwrPin, uint8_t motorPwrPin, uint8_t speedPin, uint8_t hallSensorPin, uint8_t forwardPin, uint8_t reversePin );
 	void begin();
 	void loop();
 	void pwrOnReq();
@@ -41,11 +41,14 @@ public:
 	void electronicsPwrOffReq();
 	void motorPwrOnReq();
 	void motorPwrOffReq();
-	void setSpeed(int speed);
+	void setSpeed(int speed); //PWM value between 0....255
 	void moveReverseReq();
 	void moveForwardReq();
-	//bool isMotorPwrOn() {return _motorPwrOn;};
-	//uint16_t readHalls();
+	uint16_t readRPM(){return _currentHallCountsPerInterval * RPM_FACTOR;};
+	bool isMotorPwrOn(){ return _motorPwrOn; };
+	bool isElectronicsPwrOn(){ return _electronicsPwrOn; };
+	int readSpeed(){ return _currentSpeed;}; //PWM value between 0....255
+	bool isForward(){ return _isForward;};
 
 	virtual ~Conveyor();
 
@@ -68,7 +71,6 @@ private:
 	uint8_t _hallSensorPin;
 	uint8_t _sensorPinState;
 	//uint16_t _hallSensorCount;
-	uint8_t _directionPin;
 	uint8_t _forwardPin;
 	uint8_t _reversePin;
 	//bool _conveyorOn;
@@ -82,6 +84,7 @@ private:
 	uint32_t _currentHallCountsPerInterval;
 	int _lastSpeed;
 	int _currentSpeed;
+	bool _electronicsInitialized; //if electronic didnt have a speed unequal zero at least once and direction changed, it motor will move despite zero speed settings
 	bool _forwardReq;
 	bool _isForward;
 	DirectionChangeState _directionChangeState;

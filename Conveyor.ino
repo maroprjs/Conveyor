@@ -22,26 +22,33 @@
 #include "ConveyorUI.h"
 
 /////////defines //////////////////////
-#define DIRECTION_PIN CONTROLLINO_D2
+//controllino doesn't set PINs below 0.5V at LOW, as required by Vetter's Faulhaber Motor,
+//hence we use two Relais contacts to switch between proper GND and +24V
+#define FORWARD_PIN CONTROLLINO_R2
+#define REVERSE_PIN CONTROLLINO_R3
+
 #define SPEED_PIN CONTROLLINO_D1
 #define HALL_SENSOR_PIN CONTROLLINO_IN1
 #define MOTOR_PWR_PIN CONTROLLINO_R1
 #define ELECTRONICS_PWR_PIN CONTROLLINO_R0
 
+#define UDP_SERVER_IP 10, 200, 20, 153 //application server für e.g. GUI to send status information
+#define UDP_SERVER_PORT 5555
+
 ////////// Object Instantiation //////////////////
 /*************************************************************
  * modem - local MMI represented by serial interface, WebUI by server IP and port
  */
-IPAddress serverIP(10, 200, 20, 160);
-uint16_t serverPort = 5555;
+IPAddress udpServerIP(UDP_SERVER_IP);
+uint16_t udpServerPort = UDP_SERVER_PORT;
 
-Modem modem(&Serial, serverIP, serverPort);
+Modem modem(&Serial, udpServerIP, udpServerPort);
 
 
 /*************************************************************
  * Conveyor
  */
-Conveyor conveyor(ELECTRONICS_PWR_PIN, MOTOR_PWR_PIN, SPEED_PIN, DIRECTION_PIN, HALL_SENSOR_PIN );
+Conveyor conveyor(ELECTRONICS_PWR_PIN, MOTOR_PWR_PIN, SPEED_PIN, HALL_SENSOR_PIN, FORWARD_PIN, REVERSE_PIN );
 
 /*************************************************************
  * ConveyorUI
