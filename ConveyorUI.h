@@ -11,6 +11,7 @@
 #include "Conveyor.h"
 
 #define PUBLISH_TIME_INTERVAL_MS 1000
+#define PUBLISH_MSG_ID 1
 
 class ConveyorUI {
 public:
