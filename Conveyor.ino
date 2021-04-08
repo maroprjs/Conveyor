@@ -19,6 +19,7 @@
 #include <Controllino.h>
 #include "Modem.h"
 #include "Conveyor.h"
+#include "SignalLight.h"
 #include "ConveyorUI.h"
 
 /////////defines //////////////////////
@@ -31,6 +32,10 @@
 #define HALL_SENSOR_PIN CONTROLLINO_IN1
 #define MOTOR_PWR_PIN CONTROLLINO_R1
 #define ELECTRONICS_PWR_PIN CONTROLLINO_R0
+
+#define RED_PIN CONTROLLINO_R6
+#define YELLOW_PIN CONTROLLINO_R7
+#define GREEN_PIN CONTROLLINO_R8
 
 #define UDP_SERVER_IP 10, 200, 20, 153 //application server für e.g. GUI to send status information
 #define UDP_SERVER_PORT 5555
@@ -51,9 +56,14 @@ Modem modem(&Serial, udpServerIP, udpServerPort);
 Conveyor conveyor(ELECTRONICS_PWR_PIN, MOTOR_PWR_PIN, SPEED_PIN, HALL_SENSOR_PIN, FORWARD_PIN, REVERSE_PIN );
 
 /*************************************************************
+ * Signal Light Tower
+ */
+SignalLight signalLight(RED_PIN, YELLOW_PIN, GREEN_PIN);
+
+/*************************************************************
  * ConveyorUI
  */
-ConveyorUI conveyorUI(&modem, &conveyor);
+ConveyorUI conveyorUI(&modem, &conveyor, &signalLight);
 
 
 
@@ -63,6 +73,7 @@ void setup()
 	Serial.begin(9600);
 	modem.begin();
 	conveyor.begin();
+	signalLight.begin();
 	conveyorUI.begin();
 
 }
@@ -72,6 +83,7 @@ void loop()
 {
     modem.loop();
 	conveyor.loop();
+	signalLight.loop();
 	conveyorUI.loop();
 }
 

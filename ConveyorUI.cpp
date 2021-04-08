@@ -7,9 +7,10 @@
 
 #include "ConveyorUI.h"
 
-ConveyorUI::ConveyorUI(Modem* modem, Conveyor* conveyor) {
+ConveyorUI::ConveyorUI(Modem* modem, Conveyor* conveyor, SignalLight* signalLight) {
 	_modem = modem;
 	_conveyor = conveyor;
+	_signalLight = signalLight;
 	_rxMsg = new char[UDP_TX_PACKET_MAX_SIZE];
 	_txMsg = new char[UDP_TX_PACKET_MAX_SIZE];
 	_elapsedPublishTime = 0;
@@ -38,13 +39,21 @@ void ConveyorUI::loop(){
 
 /****************************
  *
- *  e - (e)lectronics on
- *  m - (m)otor on
  *  a - (a)ll on; electronics and motor on with middle speed (and forward dierction at first start after PLC power)
- *  0...9 - speed levels, where '0' has no movement and '9' the max speed
- *  r - (r)everse direction of conveyor (resumes same speed as before) - away from cam
+ *  e - (e)lectronics on
+ *  x - turn electronics power off
+ *  m - (m)otor on
+ *  z - turn motor power off
  *  f - (f)orward direction of conveyor (resumes same speed as before) - this is towards camera
+ *  r - (r)everse direction of conveyor (resumes same speed as before) - away from cam
  *  o - (o)ff, sets speed to zero and turns off motor power and electronics
+ *  0...9 - speed levels, where '0' has no movement and '9' the max speed
+ *  p - (p)unainen on = red on
+ *  q - red off
+ *  k - (k)eltainen on = yellow on
+ *  l - yellow off
+ *  v - (v)ihrea on = green on
+ *  w - green off
  *
  */
 bool ConveyorUI::serialMMI(char command){
@@ -164,8 +173,40 @@ bool ConveyorUI::serialMMI(char command){
 		retVal = true;
 		break;
 	case 'p':{
-			_modem->mmiPort()->println(" - publish status");
-			publishStatus();
+			//_modem->mmiPort()->println(" - publish status"); <-obsolete
+			//publishStatus();<-obsolete
+		    _modem->mmiPort()->println(" - red light on");
+		    _signalLight->redOn();
+		}
+		retVal = true;
+		break;
+	case 'q':{
+		    _modem->mmiPort()->println(" - red light off");
+		    _signalLight->redOff();
+		}
+		retVal = true;
+		break;
+	case 'k':{
+		    _modem->mmiPort()->println(" - yellow light on");
+		    _signalLight->yellowOn();
+		}
+		retVal = true;
+		break;
+	case 'l':{
+		    _modem->mmiPort()->println(" - yellow light off");
+		    _signalLight->yellowOff();
+		}
+		retVal = true;
+		break;
+	case 'v':{
+		    _modem->mmiPort()->println(" - green light on");
+		    _signalLight->greenOn();
+		}
+		retVal = true;
+		break;
+	case 'w':{
+		    _modem->mmiPort()->println(" - green light off");
+		    _signalLight->greenOff();
 		}
 		retVal = true;
 		break;
