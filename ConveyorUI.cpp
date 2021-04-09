@@ -218,18 +218,21 @@ bool ConveyorUI::serialMMI(char command){
  * this must be called in loop function
  *
  * protocol fields:
- *   <message ID>,<electronics pwr state on(1)/off(0)>,<motor pwr state on(1)/off(0)>, <forward 1, else 0>, <measured RPM>,<set PWM value 0-255>
- *
+ *   <message ID>,<electronics pwr state on(1)/off(0)>,<motor pwr state on(1)/off(0)>, <forward 1, else 0>, <measured RPM>,<set PWM value 0-255>,
+ *   <red Light Status>,<yellow light status>,<green Light Status>
  */
 void ConveyorUI::publishStatus(){
 	if (millis() >= (_elapsedPublishTime + _publishInterval)){
 		//build message
-		sprintf((char*)_txMsg,"%u,%u,%u,%u,%u,%u", (unsigned int)PUBLISH_MSG_ID, \
+		sprintf((char*)_txMsg,"%u,%u,%u,%u,%u,%u,%u,%u,%u", (unsigned int)PUBLISH_MSG_ID, \
 				                            (unsigned int)_conveyor->isElectronicsPwrOn(), \
 											(unsigned int)_conveyor->isMotorPwrOn(), \
 											(unsigned int)_conveyor->isForward(), \
 											(unsigned int)_conveyor->readRPM(), \
-											(unsigned int)_conveyor->readSpeed());
+											(unsigned int)_conveyor->readSpeed(), \
+											(unsigned int)_signalLight->isRedOn(), \
+											(unsigned int)_signalLight->isYellowOn(), \
+											(unsigned int)_signalLight->isGreenOn());
 		_modem->sendUdpMsg(_txMsg);
 		_elapsedPublishTime = millis();
 	}

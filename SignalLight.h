@@ -21,12 +21,18 @@ public:
 	void yellowOff();
 	void redOn();
 	void redOff();
+	bool isRedOn(){ return _redLightOn; };
+	bool isYellowOn(){ return _yellowLightOn; };
+	bool isGreenOn(){ return _greenLightOn; };
 	virtual ~SignalLight();
 
 private:
 	uint8_t _redPin;
 	uint8_t _yellowPin;
 	uint8_t _greenPin;
+	bool _redLightOn;
+	bool _yellowLightOn;
+	bool _greenLightOn;
 };
 
 #endif /* SIGNALLIGHT_H_ */
