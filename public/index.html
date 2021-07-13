@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+     "http://www.w3.org/TR/html4/transitional.dtd">
+<html>
+<head>
+  <meta HTTP-EQUIV=CONTENT-TYPE CONTENT="text/html; charset=utf-8">
+  <script src="js/jquery-3.2.1.slim.min.js"></script>
+  <script src="js/socket.io.min.js"></script>
+  <title>Conveyor</title>
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#000080" vlink="#0000CC" alink="#000080">
+<center id="elec_status_text" style="color:blue";"font-family:Arial">
+..status..<a href="text0.html"> </a></center>
+<center id="motor_status_text"style="color:blue";"font-family:Arial">
+..status..<a href="text0.html"> </a></center>
+<center id="direction_status_text"style="color:blue";"font-family:Arial">
+..status..<a href="text0.html"> </a></center>
+<center id="speed_status_text"style="color:blue";"font-family:Arial">
+..status..<a href="text0.html"> </a></center>
+<center id="hari_msg_text"style="color:blue;font-family:Arial;font-size:10px;">
+..hari message shows here..<a href="text0.html"> </a></center><br>
+<center>
+<img src='http://10.200.20.159/axis-cgi/mjpg/video.cgi?camera=1&resolution=320x240' style="position:absolute;top:153px;left:140px; background: #fff; height:175px;z-index:2;">
+<img src="conveyor_2.png" alt="" USEMAP="#map0" style="position:absolute;top:100px;left:0px;">
+</center>
+<map name="map0"style="z-index:1;">
+<area id="speeddn_btn" onclick="sendCommand('speed_dn')" shape="rect" alt="" coords="816,414,834,444" href="#">
+<area id="speedup_btn" onclick="sendCommand('speed_up')" shape="rect" alt="" coords="816,356,834,387" href="#">
+<area id="speed1_btn" onclick="sendCommand('1')" shape="rect" alt="" coords="856,443,879,455"  href="#">
+<area id="speed2_btn" onclick="sendCommand('2')" shape="rect" alt="" coords="856,431,879,442"  href="#">
+<area id="speed3_btn" onclick="sendCommand('3')" shape="rect" alt="" coords="856,418,878,429"  href="#">
+<area id="speed4_btn" onclick="sendCommand('4')" shape="rect" alt="" coords="856,406,878,417"  href="#">
+<area id="speed5_btn" onclick="sendCommand('5')" shape="rect" alt="" coords="856,393,878,404"  href="#">
+<area id="speed6_btn" onclick="sendCommand('6')" shape="rect" alt="" coords="856,380,878,391"  href="#">
+<area id="speed7_btn" onclick="sendCommand('7')" shape="rect" alt="" coords="856,367,878,378"  href="#">
+<area id="speed8_btn" onclick="sendCommand('8')" shape="rect" alt="" coords="856,354,878,365"  href="#">
+<area id="speed9_btn" onclick="sendCommand('9')" shape="rect" alt="" coords="856,341,878,352"  href="#">
+<area id="elec_pwr_btn" onclick="sendCommand('e')" shape="rect" alt="" coords="756,332,789,365" href="#" >
+<area id="motor_pwr_btn" onclick="sendCommand('m')" shape="rect" alt="" coords="754,374,789,406"  href="#">
+<area id="forward_btn" onclick="sendCommand('f')" shape="rect" alt="" coords="772,420,810,459"  href="#">
+<area id="reverse_btn" onclick="sendCommand('r')" shape="rect" alt="" coords="732,422,770,461"  href="#">
+<area id="speedmeter" onclick="sendCommand('0')" shape="rect" alt="" coords="759,151,876,269">
+<area id="cam_playback" shape="rect" alt="" coords="109,40,439,243" >
+</map>
+  <script>
+        var ioSocket;
+		var elecPwr = "OFF";
+		var motorPwr = "OFF";
+		var currentSpeedLevel = 0;
+        $(window).bind("load", function () {
+            ioSocket = io();
+            ioSocket.on('connect', function () {
+               //call the server-side function 'adduser' and send one parameter (value of prompt)
+               console.log("socket connected");
+            });
+            ioSocket.on('status_report', function (data) {
+                //var obj = (data);
+                console.log(data);
+				var statusElementArray = data.split(',');
+				var msgID = statusElementArray[0]; //if status providers grow, we need distinction (msg id for conveyor control = 1)
+				elecPwr = (statusElementArray[1] == '1') ? "ON" : "OFF";
+				motorPwr = (statusElementArray[2] == '1') ? "ON" : "OFF";
+				var direction = (statusElementArray[3] == '1') ? "FORWARD" : "REVERSE";
+				var speedRPM = statusElementArray[4];
+                var setPWM = statusElementArray[5]; //setPWM may be unequal zero during direction change
+				getSpeedLevel( setPWM );
+                document.getElementById("elec_status_text").innerHTML =      "Electronics Power is: " + elecPwr; // + " " + motorPwr + " " + direction + " " + speedRPM;
+                document.getElementById("motor_status_text").innerHTML =     "Motor Power is: " + motorPwr;
+                document.getElementById("direction_status_text").innerHTML = "Belt's Direction: " + direction;
+                document.getElementById("speed_status_text").innerHTML =     "Motor Speed [RPM]: " + speedRPM; 				
+            });
+            ioSocket.on('hari_report', function (data) {
+                //var obj = (data);
+                console.log(data);
+                document.getElementById("hari_msg_text").innerHTML =     "hari says: " + JSON.stringify(data);
+            });
+			
+		});
+		function sendCommand(cmd) {
+			console.log(cmd);
+			if (cmd == 'e') {
+				cmd = (elecPwr == "OFF") ? 'e' : 'x';
+			}
+			if (cmd == 'm') {
+				cmd = (motorPwr == "OFF") ? 'm' : 'z';
+			}
+			if (cmd == 'speed_dn') cmd = decrementSpeed();
+			if (cmd == 'speed_up') cmd = incrementSpeed();
+			ioSocket.emit('command', cmd);
+		}
+		
+		function getSpeedLevel( pwmValue ) { //this must be aligned with the embedded side!!!
+		    if (parseInt(pwmValue) < 15) currentSpeedLevel = 0;
+			if ((parseInt(pwmValue) > 15) && (parseInt(pwmValue) < 35 )) currentSpeedLevel = 1;
+            if ((parseInt(pwmValue) > 35) && (parseInt(pwmValue) < 60 )) currentSpeedLevel = 2;
+			if ((parseInt(pwmValue) > 60) && (parseInt(pwmValue) < 95 )) currentSpeedLevel = 3;
+			if ((parseInt(pwmValue) > 95) && (parseInt(pwmValue) < 120 )) currentSpeedLevel = 4;
+			if ((parseInt(pwmValue) > 120) && (parseInt(pwmValue) < 145 )) currentSpeedLevel = 5;
+			if ((parseInt(pwmValue) > 145) && (parseInt(pwmValue) < 170 )) currentSpeedLevel = 6;
+			if ((parseInt(pwmValue) > 170) && (parseInt(pwmValue) < 195 )) currentSpeedLevel = 7;
+			if ((parseInt(pwmValue) > 195) && (parseInt(pwmValue) < 220 )) currentSpeedLevel = 8;
+			if ((parseInt(pwmValue) > 220) && (parseInt(pwmValue) < 256 )) currentSpeedLevel = 9;
+		}
+		
+		function incrementSpeed(){
+		   currentSpeedLevel++;
+		   currentSpeedLevel = ( currentSpeedLevel > 9 ) ? 9 : currentSpeedLevel; //9 is maximum
+		   return currentSpeedLevel.toString();
+		}
+		
+		function decrementSpeed(){
+		   currentSpeedLevel--;
+		   currentSpeedLevel = ( currentSpeedLevel < 0 ) ? 0 : currentSpeedLevel; //0 is minimum
+		   return currentSpeedLevel.toString();
+		}
+		
+  </script>
+</body>
+</html>
