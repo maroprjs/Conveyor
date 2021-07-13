@@ -36,6 +36,7 @@
 #define RED_PIN CONTROLLINO_R6
 #define YELLOW_PIN CONTROLLINO_R7
 #define GREEN_PIN CONTROLLINO_R8
+#define MINI_CONV_YELLOW_PIN CONTROLLINO_R5 //yellow light as replacement when no industrial is available
 
 #define UDP_SERVER_IP 10, 200, 20, 153 //application server für e.g. GUI to send status information
 #define UDP_SERVER_PORT 5555
@@ -58,7 +59,7 @@ Conveyor conveyor(ELECTRONICS_PWR_PIN, MOTOR_PWR_PIN, SPEED_PIN, HALL_SENSOR_PIN
 /*************************************************************
  * Signal Light Tower
  */
-SignalLight signalLight(RED_PIN, YELLOW_PIN, GREEN_PIN);
+SignalLight signalLight(RED_PIN, YELLOW_PIN, GREEN_PIN, MINI_CONV_YELLOW_PIN);
 
 /*************************************************************
  * ConveyorUI
