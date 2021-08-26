@@ -10,13 +10,14 @@
 #include "Modem.h"
 #include "Conveyor.h"
 #include "SignalLight.h"
+#include "NfcReader.h"
 
 #define PUBLISH_TIME_INTERVAL_MS 1000
 #define PUBLISH_MSG_ID 1
 
 class ConveyorUI {
 public:
-	ConveyorUI(Modem* modem, Conveyor* conveyor, SignalLight* signalLight);
+	ConveyorUI(Modem* modem, Conveyor* conveyor, SignalLight* signalLight, NfcReader* nfcReader);
 	void begin();
 	void loop();
 	bool serialMMI(char command);
@@ -29,6 +30,7 @@ private:
 	Modem* _modem;
 	Conveyor* _conveyor;
 	SignalLight* _signalLight;
+	NfcReader* _nfcReader;
 	char* _rxMsg;
 	char* _txMsg;
 	uint32_t _elapsedPublishTime;

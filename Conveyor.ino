@@ -20,7 +20,9 @@
 #include "Modem.h"
 #include "Conveyor.h"
 #include "SignalLight.h"
+#include "NfcReader.h"
 #include "ConveyorUI.h"
+
 
 /////////defines //////////////////////
 //controllino doesn't set PINs below 0.5V at LOW, as required by Vetter's Faulhaber Motor,
@@ -62,9 +64,15 @@ Conveyor conveyor(ELECTRONICS_PWR_PIN, MOTOR_PWR_PIN, SPEED_PIN, HALL_SENSOR_PIN
 SignalLight signalLight(RED_PIN, YELLOW_PIN, GREEN_PIN, MINI_CONV_YELLOW_PIN);
 
 /*************************************************************
+ * NFC Reader
+ */
+NfcReader nfcReader; //pins defined in NfcReader.h
+
+/*************************************************************
  * ConveyorUI
  */
-ConveyorUI conveyorUI(&modem, &conveyor, &signalLight);
+ConveyorUI conveyorUI(&modem, &conveyor, &signalLight, &nfcReader);
+
 
 
 
@@ -75,6 +83,7 @@ void setup()
 	modem.begin();
 	conveyor.begin();
 	signalLight.begin();
+	nfcReader.begin();
 	conveyorUI.begin();
 
 }
@@ -85,6 +94,7 @@ void loop()
     modem.loop();
 	conveyor.loop();
 	signalLight.loop();
+	nfcReader.loop();
 	conveyorUI.loop();
 }
 

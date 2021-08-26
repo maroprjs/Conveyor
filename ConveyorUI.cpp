@@ -7,10 +7,11 @@
 
 #include "ConveyorUI.h"
 
-ConveyorUI::ConveyorUI(Modem* modem, Conveyor* conveyor, SignalLight* signalLight) {
+ConveyorUI::ConveyorUI(Modem* modem, Conveyor* conveyor, SignalLight* signalLight, NfcReader* nfcReader) {
 	_modem = modem;
 	_conveyor = conveyor;
 	_signalLight = signalLight;
+	_nfcReader = nfcReader;
 	_rxMsg = new char[UDP_TX_PACKET_MAX_SIZE];
 	_txMsg = new char[UDP_TX_PACKET_MAX_SIZE];
 	_elapsedPublishTime = 0;
@@ -222,9 +223,12 @@ bool ConveyorUI::serialMMI(char command){
  *   <red Light Status>,<yellow light status>,<green Light Status>
  */
 void ConveyorUI::publishStatus(){
+	if (_nfcReader->isNewTagToPublish()){
+		_elapsedPublishTime = 0; //that will make next if condition true immediately
+	};
 	if (millis() >= (_elapsedPublishTime + _publishInterval)){
 		//build message
-		sprintf((char*)_txMsg,"%u,%u,%u,%u,%u,%u,%u,%u,%u", (unsigned int)PUBLISH_MSG_ID, \
+		sprintf((char*)_txMsg,"%u,%u,%u,%u,%u,%u,%u,%u,%u,%u", (unsigned int)PUBLISH_MSG_ID, \
 				                            (unsigned int)_conveyor->isElectronicsPwrOn(), \
 											(unsigned int)_conveyor->isMotorPwrOn(), \
 											(unsigned int)_conveyor->isForward(), \
@@ -232,7 +236,8 @@ void ConveyorUI::publishStatus(){
 											(unsigned int)_conveyor->readSpeed(), \
 											(unsigned int)_signalLight->isRedOn(), \
 											(unsigned int)_signalLight->isYellowOn(), \
-											(unsigned int)_signalLight->isGreenOn());
+											(unsigned int)_signalLight->isGreenOn(), \
+											(unsigned int)_nfcReader->getTagId());
 		_modem->sendUdpMsg(_txMsg);
 		_elapsedPublishTime = millis();
 	}
