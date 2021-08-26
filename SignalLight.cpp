@@ -35,7 +35,7 @@ void SignalLight::loop(){
 
 	/*
 	 * emulate RED if only one yellow bulb available
-	 */
+	 *//*
 	if (_redLightOn){
 		if (millis() >= (_elapsedTime + MINI_CONV_YELLOW_BULB_FLASHING_FOR_RED_MS)){
 				if (_miniConvYellowOn == false){
@@ -47,7 +47,7 @@ void SignalLight::loop(){
 		};
 	} else if ((_redLightOn == false) && (_yellowLightOn == false) && (_miniConvYellowOn == true)){
 		miniConvYellowOff();
-	};
+	};*/
 };
 
 void SignalLight::redOn(){
@@ -57,21 +57,21 @@ void SignalLight::redOn(){
 void SignalLight::redOff(){
 	digitalWrite(_redPin, LOW);
 	_redLightOn = false;
-	miniConvYellowOff();
+	//miniConvYellowOff();
 };
 
 void SignalLight::yellowOn(){
 	digitalWrite(_yellowPin, HIGH);
 	_yellowLightOn = true;
 	if (_redLightOn == false){
-		miniConvYellowOn();
+		//miniConvYellowOn();
 	};
 };
 void SignalLight::yellowOff(){
 	digitalWrite(_yellowPin, LOW);
 	_yellowLightOn = false;
 	if (_redLightOn == false){
-		miniConvYellowOff();
+		//miniConvYellowOff();
 	};
 };
 
