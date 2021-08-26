@@ -39,15 +39,17 @@ void NfcReader::begin(){
 
 }
 void NfcReader::loop(){
-	if (millis() > _lastTagTimstamp + DEBOUNCE_TIME){
-		_tagRecognized = _nfc->readPassiveTargetID(PN532_MIFARE_ISO14443A, _uid, _uidLength);
-		if (_tagRecognized) {
-			Serial.print("Found a card ID: "); Serial.println(_uid[1]);//enough to report second byte!!
-			_newTagToPublish = true;
-			_lastTagTimstamp = millis();
-
-		}
-	}
+  if (_readerConnected){
+  	if (millis() > _lastTagTimstamp + DEBOUNCE_TIME){
+  		_tagRecognized = _nfc->readPassiveTargetID(PN532_MIFARE_ISO14443A, _uid, _uidLength);
+  		if (_tagRecognized) {
+  			Serial.print("Found a card ID: "); Serial.println(_uid[1]);//enough to report second byte!!
+  			_newTagToPublish = true;
+  			_lastTagTimstamp = millis();
+  
+  		}
+  	}
+ }
 
 
 }
@@ -67,4 +69,3 @@ unsigned int NfcReader::getTagId(){
 NfcReader::~NfcReader() {
 	// TODO Auto-generated destructor stub
 }
-

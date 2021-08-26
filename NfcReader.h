@@ -10,10 +10,10 @@
 
 #include <Adafruit_PN532.h>
 
-#define PN532_SCK  (52)
-#define PN532_MOSI (51)
-#define PN532_SS   (53)
-#define PN532_MISO (50)
+#define PN532_SCK  (3)
+#define PN532_MOSI (4)
+#define PN532_SS   (5)
+#define PN532_MISO (6)
 #define DEBOUNCE_TIME 500
 
 class NfcReader {
