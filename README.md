@@ -1,8 +1,8 @@
 # Conveyor
 Controllino Code (Arduino Compatible) to control vetter conveyor belts via serial port or udp. 
 
-The IP address per dhcp. Server Address needs to be adjusted in Controllino.ino
-
+The IP address defined in "Defines.h". Server Address needs to be adjusted.
+ 
 The server based on NodeJs, found on "server"-branch above. 
 
 /****************************
@@ -23,5 +23,6 @@ The server based on NodeJs, found on "server"-branch above.
  *  l - yellow off
  *  v - (v)ihrea on = green on
  *  w - green off
- *
+ *  b - buzzer on
+ *  c - buzzer off*
  */
