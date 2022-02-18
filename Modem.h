@@ -11,15 +11,15 @@
 #include <Controllino.h>
 #include <Ethernet.h>
 #include <EthernetUdp.h>
+#include "Defines.h"
 
-#define MAC_ADDRESS { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }
-#define LOCAL_UDP_PORT 3333
+
 
 
 class Modem {
 
 public:
-	Modem(HardwareSerial* mmiPort, IPAddress serverIP, uint16_t serverPort);
+	Modem(HardwareSerial* mmiPort, IPAddress serverIP, uint16_t serverPort, IPAddress ownIP);
 	void begin();
 	void loop();
 	HardwareSerial* mmiPort() {return _mmiPort;};
@@ -29,6 +29,7 @@ public:
 	virtual ~Modem();
 private:
 	IPAddress _serverIP;
+	IPAddress _ownIP;
 	uint16_t _serverPort;
 	HardwareSerial* _mmiPort;
 	EthernetUDP* _udp;

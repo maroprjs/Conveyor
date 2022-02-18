@@ -7,11 +7,12 @@
 
 #include "ConveyorUI.h"
 
-ConveyorUI::ConveyorUI(Modem* modem, Conveyor* conveyor, SignalLight* signalLight, NfcReader* nfcReader) {
+ConveyorUI::ConveyorUI(Modem* modem, Conveyor* conveyor, SignalLight* signalLight, NfcReader* nfcReader, InfraredSensor* irSensor) {
 	_modem = modem;
 	_conveyor = conveyor;
 	_signalLight = signalLight;
 	_nfcReader = nfcReader;
+	_irSensor = irSensor;
 	_rxMsg = new char[UDP_TX_PACKET_MAX_SIZE];
 	_txMsg = new char[UDP_TX_PACKET_MAX_SIZE];
 	_elapsedPublishTime = 0;
@@ -55,6 +56,8 @@ void ConveyorUI::loop(){
  *  l - yellow off
  *  v - (v)ihrea on = green on
  *  w - green off
+ *  b - buzzer on
+ *  c - bozzer off
  *
  */
 bool ConveyorUI::serialMMI(char command){
@@ -211,6 +214,18 @@ bool ConveyorUI::serialMMI(char command){
 		}
 		retVal = true;
 		break;
+	case 'b':{
+		    _modem->mmiPort()->println(" - buzzer on");
+		    _signalLight->buzzerOn();
+		}
+		retVal = true;
+		break;
+	case 'c':{
+		    _modem->mmiPort()->println(" - buzzer off");
+		    _signalLight->buzzerOff();
+		}
+		retVal = true;
+		break;
 	}
 	return retVal;
 }
@@ -228,7 +243,7 @@ void ConveyorUI::publishStatus(){
 	};
 	if (millis() >= (_elapsedPublishTime + _publishInterval)){
 		//build message
-		sprintf((char*)_txMsg,"%u,%u,%u,%u,%u,%u,%u,%u,%u,%u", (unsigned int)PUBLISH_MSG_ID, \
+		sprintf((char*)_txMsg,"%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u", (unsigned int)PUBLISH_MSG_ID, \
 				                            (unsigned int)_conveyor->isElectronicsPwrOn(), \
 											(unsigned int)_conveyor->isMotorPwrOn(), \
 											(unsigned int)_conveyor->isForward(), \
@@ -237,7 +252,8 @@ void ConveyorUI::publishStatus(){
 											(unsigned int)_signalLight->isRedOn(), \
 											(unsigned int)_signalLight->isYellowOn(), \
 											(unsigned int)_signalLight->isGreenOn(), \
-											(unsigned int)_nfcReader->getTagId());
+											(unsigned int)_nfcReader->getTagId(), \
+											(unsigned int)_irSensor->isObjectDetected());
 		_modem->sendUdpMsg(_txMsg);
 		_elapsedPublishTime = millis();
 	}

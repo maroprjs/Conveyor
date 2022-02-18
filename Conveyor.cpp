@@ -66,10 +66,10 @@ void Conveyor::loop(){
 
 	//if ((_conveyorOnReq == true) && ( _conveyorOn == false )) on();
 	//if ((_conveyorOnReq == false) && ( _conveyorOn == true )) off();
+	if ((_motorPwrOnReq == false) && ( _motorPwrOn == true )) motorPwrOff();
+	if ((_motorPwrOnReq == true) && ( _motorPwrOn == false )) motorPwrOn();
 	if ((_electronicsPwrOnReq == true) && ( _electronicsPwrOn == false )) electronicsPwrOn();
 	if ((_electronicsPwrOnReq == false) && ( _electronicsPwrOn == true )) electronicsPwrOff();
-	if ((_motorPwrOnReq == true) && ( _motorPwrOn == false )) motorPwrOn();
-	if ((_motorPwrOnReq == false) && ( _motorPwrOn == true )) motorPwrOff();
 	if (millis() >= (_elapsedTime + _measurementInterval)){ //motor speed
 		_currentHallCountsPerInterval = hallSensorCount;
 		_elapsedTime = millis();
@@ -89,6 +89,7 @@ void Conveyor::pwrOnReq(){
 	//_conveyorOnReq = true;
 	_electronicsPwrOnReq = true;
 	_motorPwrOnReq = true;
+
 
 }
 
@@ -221,6 +222,7 @@ void Conveyor::switchDirection(){
 			break;
 		 case RESUME_DIRECTIONAL_CONTACTS:
 			if (_motorPwrOn == false){
+				setSpeed(SPEED_ZERO);
 				motorPwrOnReq();
 			}
 			else{

@@ -15,7 +15,7 @@
 #define SECONDS HALL_SENSOR_MEAS_INTERVAL_MS / 1000 //if required change this with meas interval accordingly
 #define HALLS_PER_ROUND 32
 #define RPM_FACTOR 60 * SECONDS / HALLS_PER_ROUND
-#define SPEED_ZERO  10 //PWM 0 doesn't produce 0V, so we add an offset
+#define SPEED_ZERO  0 //PWM 0 doesn't produce 0V, so we add an offset
 #define STATE_TRANSITION_TIME_MS 25
 
 
@@ -44,6 +44,7 @@ public:
 	void setSpeed(int speed); //PWM value between 0....255
 	void moveReverseReq();
 	void moveForwardReq();
+	void motorPwrOff();
 	uint16_t readRPM(){return _currentHallCountsPerInterval * RPM_FACTOR;};
 	bool isMotorPwrOn(){ return _motorPwrOn; };
 	bool isElectronicsPwrOn(){ return _electronicsPwrOn; };
@@ -57,7 +58,7 @@ private:
 	void on();
 	void electronicsPwrOff();
 	void electronicsPwrOn();
-	void motorPwrOff();
+	//void motorPwrOff();
 	void motorPwrOn();
 	void switchDirection();
 	void releaseDirectionalContacts();

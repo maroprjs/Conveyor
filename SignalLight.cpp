@@ -7,14 +7,16 @@
 
 #include "SignalLight.h"
 
-SignalLight::SignalLight(uint8_t redPin, uint8_t yellowPin, uint8_t greenPin, uint8_t miniConvYellowPin) {
+SignalLight::SignalLight(uint8_t redPin, uint8_t yellowPin, uint8_t greenPin, uint8_t buzzerPin, uint8_t miniConvYellowPin) {
 	_redPin = redPin;
 	_yellowPin = yellowPin;
 	_greenPin = greenPin;
+	_buzzerPin = buzzerPin;
 	_miniConvYellowPin = miniConvYellowPin;
 	_redLightOn = false;
 	_yellowLightOn = false;
 	_greenLightOn = false;
+	_buzzerOn = false;
 	_miniConvYellowOn = false;
 	_elapsedTime = 0;
 
@@ -24,10 +26,12 @@ void SignalLight::begin(){
 	pinMode(_redPin, OUTPUT);
 	pinMode(_yellowPin, OUTPUT);
 	pinMode(_greenPin, OUTPUT);
+	pinMode(_buzzerPin, OUTPUT);
 	pinMode(_miniConvYellowPin, OUTPUT);
 	digitalWrite(_redPin, LOW);
 	digitalWrite(_yellowPin, LOW);
 	digitalWrite(_greenPin, LOW);
+	digitalWrite(_buzzerPin, LOW);
 	digitalWrite(_miniConvYellowPin, LOW);
 };
 
@@ -83,6 +87,16 @@ void SignalLight::greenOn(){
 void SignalLight::greenOff(){
 	digitalWrite(_greenPin, LOW);
 	_greenLightOn = false;
+};
+
+void SignalLight::buzzerOn(){
+	digitalWrite(_buzzerPin, HIGH);
+	_buzzerOn = true;
+};
+
+void SignalLight::buzzerOff(){
+	digitalWrite(_buzzerPin, LOW);
+	_buzzerOn = false;
 };
 
 /**

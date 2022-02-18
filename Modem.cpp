@@ -8,9 +8,10 @@
 #include "Modem.h"
 
 
-Modem::Modem(HardwareSerial* mmiPort, IPAddress serverIP, uint16_t serverPort){
+Modem::Modem(HardwareSerial* mmiPort, IPAddress serverIP, uint16_t serverPort, IPAddress ownIP){
 	_mmiPort = mmiPort;
     _serverIP = serverIP;
+    _ownIP = ownIP;
     _serverPort =  serverPort;
     _localPort = LOCAL_UDP_PORT;
     _packetSize = 0;
@@ -21,10 +22,10 @@ Modem::Modem(HardwareSerial* mmiPort, IPAddress serverIP, uint16_t serverPort){
 byte Modem::_mac[] = MAC_ADDRESS;
 
 void Modem::begin(){
-	Ethernet.begin(_mac);
-	if (Ethernet.linkStatus() == LinkOFF) {
-	    Serial.println("Ethernet cable is not connected.");
-	};
+	Ethernet.begin(_mac, _ownIP);
+	//if (Ethernet.linkStatus() == LinkOFF) { //not working on WIZ 5100
+	//    Serial.println("Ethernet cable is not connected.");
+	//};
 	Serial.println("");
 	Serial.println(Ethernet.localIP());
 	_udp->begin(_localPort);

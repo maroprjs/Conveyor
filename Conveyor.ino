@@ -21,36 +21,24 @@
 #include "Conveyor.h"
 #include "SignalLight.h"
 #include "NfcReader.h"
+#include "InfraredSensor.h"
 #include "ConveyorUI.h"
+#include "Defines.h"
 
 
 /////////defines //////////////////////
-//controllino doesn't set PINs below 0.5V at LOW, as required by Vetter's Faulhaber Motor,
-//hence we use two Relais contacts to switch between proper GND and +24V
-#define FORWARD_PIN CONTROLLINO_R2
-#define REVERSE_PIN CONTROLLINO_R3
 
-#define SPEED_PIN CONTROLLINO_D1
-#define HALL_SENSOR_PIN CONTROLLINO_IN1
-#define MOTOR_PWR_PIN CONTROLLINO_R1
-#define ELECTRONICS_PWR_PIN CONTROLLINO_R0
-
-#define RED_PIN CONTROLLINO_R6
-#define YELLOW_PIN CONTROLLINO_R7
-#define GREEN_PIN CONTROLLINO_R8
-#define MINI_CONV_YELLOW_PIN CONTROLLINO_R5 //yellow light as replacement when no industrial is available
-
-#define UDP_SERVER_IP 10, 200, 20, 153 //application server für e.g. GUI to send status information
-#define UDP_SERVER_PORT 5555
+//defines moved to ConveyorDefines.h
 
 ////////// Object Instantiation //////////////////
 /*************************************************************
  * modem - local MMI represented by serial interface, WebUI by server IP and port
  */
 IPAddress udpServerIP(UDP_SERVER_IP);
+IPAddress ownIP(OWN_IP);
 uint16_t udpServerPort = UDP_SERVER_PORT;
 
-Modem modem(&Serial, udpServerIP, udpServerPort);
+Modem modem(&Serial, udpServerIP, udpServerPort, ownIP);
 
 
 /*************************************************************
@@ -61,7 +49,7 @@ Conveyor conveyor(ELECTRONICS_PWR_PIN, MOTOR_PWR_PIN, SPEED_PIN, HALL_SENSOR_PIN
 /*************************************************************
  * Signal Light Tower
  */
-SignalLight signalLight(RED_PIN, YELLOW_PIN, GREEN_PIN, MINI_CONV_YELLOW_PIN);
+SignalLight signalLight(RED_PIN, YELLOW_PIN, GREEN_PIN, BUZZER_PIN, MINI_CONV_YELLOW_PIN);
 
 /*************************************************************
  * NFC Reader
@@ -69,9 +57,15 @@ SignalLight signalLight(RED_PIN, YELLOW_PIN, GREEN_PIN, MINI_CONV_YELLOW_PIN);
 NfcReader nfcReader; //pins defined in NfcReader.h
 
 /*************************************************************
+ * Infrared Sensor
+ */
+InfraredSensor irSensor(IR_SENSOR_PIN, &conveyor);
+
+
+/*************************************************************
  * ConveyorUI
  */
-ConveyorUI conveyorUI(&modem, &conveyor, &signalLight, &nfcReader);
+ConveyorUI conveyorUI(&modem, &conveyor, &signalLight, &nfcReader, &irSensor);
 
 
 
@@ -80,11 +74,14 @@ ConveyorUI conveyorUI(&modem, &conveyor, &signalLight, &nfcReader);
 void setup()
 {
 	Serial.begin(9600);
+	delay(100);
 	modem.begin();
 	conveyor.begin();
 	signalLight.begin();
 	nfcReader.begin();
+	irSensor.begin();
 	conveyorUI.begin();
+
 
 }
 
@@ -92,6 +89,7 @@ void setup()
 void loop()
 {
     modem.loop();
+	irSensor.loop();//keep this one before conveyor loop
 	conveyor.loop();
 	signalLight.loop();
 	nfcReader.loop();
