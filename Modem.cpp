@@ -22,11 +22,8 @@ Modem::Modem(HardwareSerial* mmiPort, IPAddress serverIP, uint16_t serverPort, I
 byte Modem::_mac[] = MAC_ADDRESS;
 
 void Modem::begin(){
+
 	Ethernet.begin(_mac, _ownIP);
-	//if (Ethernet.linkStatus() == LinkOFF) { //not working on WIZ 5100
-	//    Serial.println("Ethernet cable is not connected.");
-	//};
-	Serial.println("");
 	Serial.println(Ethernet.localIP());
 	_udp->begin(_localPort);
 }

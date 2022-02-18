@@ -9,16 +9,14 @@
 #define NFCREADER_H_
 
 #include <Adafruit_PN532.h>
+#include "Defines.h" //for pins
 
-#define PN532_SCK  (3)
-#define PN532_MOSI (4)
-#define PN532_SS   (5)
-#define PN532_MISO (6)
-#define DEBOUNCE_TIME 500
+
+#define DEBOUNCE_TIME 1000
 
 class NfcReader {
 public:
-	NfcReader();
+	NfcReader(uint8_t nfcReaderId,uint8_t sckPin,uint8_t misoPin,uint8_t mosiPin,uint8_t ssPin);
 	void begin();
 	void loop();
 	bool isNewTagToPublish();
@@ -31,6 +29,11 @@ private:
 	uint8_t* _uid;
 	uint8_t* _uidLength;
 	uint32_t _lastTagTimstamp;
+	uint8_t _nfcReaderId;
+	uint8_t _sckPin;
+	uint8_t _misoPin;
+	uint8_t _mosiPin;
+	uint8_t _ssPin;
 	bool _newTagToPublish;
 
 };

@@ -8,9 +8,13 @@
 #include "NfcReader.h"
 
 
-NfcReader::NfcReader() {
-	// TODO Auto-generated constructor stub
-	_nfc = new Adafruit_PN532(PN532_SCK, PN532_MISO, PN532_MOSI, PN532_SS);
+NfcReader::NfcReader(uint8_t nfcReaderId, uint8_t sckPin,uint8_t misoPin,uint8_t mosiPin,uint8_t ssPin) {
+	_nfcReaderId =  nfcReaderId;
+	_sckPin = sckPin;
+	_misoPin = misoPin;
+	_mosiPin = mosiPin;
+	_ssPin = ssPin;
+	_nfc = new Adafruit_PN532(_sckPin,_misoPin,_mosiPin, _ssPin);
 	_readerConnected = false;
 	_tagRecognized = false;
 	_uid = new uint8_t[7];
@@ -25,8 +29,14 @@ void NfcReader::begin(){
 	_nfc->begin();
 	uint32_t versiondata = _nfc->getFirmwareVersion();
 	if (! versiondata) {
-		Serial.println("Didn't find PN53x board");
+		Serial.print("Didn't find PN53x board ");Serial.println(_nfcReaderId);
 	}else{
+
+
+
+
+
+		Serial.print("PN53x board ");Serial.print(_nfcReaderId);Serial.println(" found ");
 		_readerConnected = true;
 		// Set the max number of retry attempts to read from a card
 		// This prevents us from waiting forever for a card, which is
@@ -42,7 +52,7 @@ void NfcReader::loop(){
   if (_readerConnected){
   	if (millis() > _lastTagTimstamp + DEBOUNCE_TIME){
   		_tagRecognized = _nfc->readPassiveTargetID(PN532_MIFARE_ISO14443A, _uid, _uidLength);
-  		if (_tagRecognized) {
+  		if (_tagRecognized == true) {
   			Serial.print("Found a card ID: "); Serial.println(_uid[1]);//enough to report second byte!!
   			_newTagToPublish = true;
   			_lastTagTimstamp = millis();
