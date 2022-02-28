@@ -66,8 +66,9 @@ bool ConveyorUI::serialMMI(char command){
 	switch (command){
 	case 'a':{
 			serialMMI('e');
-	    	serialMMI('m');
-	    	serialMMI('5');
+      serialMMI('4');
+	    serialMMI('m');
+	    	
 		}
 		retVal = true;
 		break;
@@ -85,6 +86,7 @@ bool ConveyorUI::serialMMI(char command){
 		break;
 	case 'm':{
 			_modem->mmiPort()->println(" - turn on motor");
+      _irSensor->disableTemporaly();
 			_conveyor->motorPwrOnReq();
 		}
 		retVal = true;
@@ -262,4 +264,3 @@ void ConveyorUI::publishStatus(){
 ConveyorUI::~ConveyorUI() {
 	// TODO Auto-generated destructor stub
 }
-
