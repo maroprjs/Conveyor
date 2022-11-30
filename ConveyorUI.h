@@ -18,6 +18,30 @@
 #define PUBLISH_TIME_INTERVAL_MS 1000
 #define PUBLISH_MSG_ID 1
 
+struct ButtonStatus {
+	uint16_t emergActive : 1;
+	uint16_t startStopClicked : 1;
+	uint16_t fwdRvsClicked : 1;
+	uint16_t speedClicked : 1;
+	uint16_t onOffSwitchActive : 1;
+	uint16_t placeholder1 : 1;
+	uint16_t placeholder2 : 1;
+	uint16_t placeholder3 : 1;
+	uint16_t placeholder11 : 1;
+	uint16_t placeholder12 : 1;
+	uint16_t placeholder13 : 1;
+	uint16_t placeholder14 : 1;
+	uint16_t placeholder15 : 1;
+	uint16_t placeholder16 : 1;
+	uint16_t placeholder17 : 1;
+	uint16_t placeholder18 : 1;
+};
+
+//struct ButtonStatus {
+//	uint8_t emergActive : 1, startStopClicked : 1, fwdRvsClicked : 1, speedClicked : 1, onOffSwitchActive : 1, \
+//	        placeholder1 : 1, placeholder2 : 1, placeholder3 : 1;
+//};
+
 
 class ConveyorUI {
 public:
@@ -57,6 +81,7 @@ private:
 	bool _flipFlop;
 	bool _emergencyActive;
 	uint8_t _speedMap[NUM_OF_SPEED_VALUES] = SPEED_MAPPING;
+	ButtonStatus _btnStatus;
 };
 
 #endif /* CONVEYORUI_H_ */

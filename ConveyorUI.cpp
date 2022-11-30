@@ -28,6 +28,17 @@ ConveyorUI::ConveyorUI(Modem* modem, Conveyor* conveyor, SignalLight* signalLigh
 	_raspberry = raspberry;
 	_flipFlop = false;
 	_emergencyActive = false;
+    _btnStatus.placeholder1 = 0;
+    _btnStatus.placeholder2 = 0;
+    _btnStatus.placeholder3 = 0;
+    _btnStatus.placeholder11 = 0;
+    _btnStatus.placeholder12 = 0;
+    _btnStatus.placeholder13 = 0;
+    _btnStatus.placeholder14 = 0;
+    _btnStatus.placeholder15 = 0;
+    _btnStatus.placeholder16 = 0;
+    _btnStatus.placeholder17 = 0;
+    _btnStatus.placeholder18 = 0;
 
 
 }
@@ -287,14 +298,12 @@ void ConveyorUI::publishStatus(){
 	handleButtonActions();
 
 	if (millis() >= (_elapsedPublishTime + _publishInterval)){
-		handleButtonActions();
 
 		//flashing lights in extenden UI  mode
-		//handleSignalLightActions();
-		//Serial.println(digitalRead(ONOFF_SENSE_PIN));
+		handleSignalLightActions();
 
 		//build message for GUI
-		sprintf((char*)_txMsg,"%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u", (unsigned int)PUBLISH_MSG_ID, \
+		sprintf((char*)_txMsg,"%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u", (unsigned int)PUBLISH_MSG_ID, \
 				                            (unsigned int)_conveyor->isElectronicsPwrOn(), \
 											(unsigned int)_conveyor->isMotorPwrOn(), \
 											(unsigned int)_conveyor->isForward(), \
@@ -304,7 +313,9 @@ void ConveyorUI::publishStatus(){
 											(unsigned int)_signalLight->isYellowOn(), \
 											(unsigned int)_signalLight->isGreenOn(), \
 											(unsigned int)_nfcReader->getTagId(), \
-											(unsigned int)_irSensor->isObjectDetected());
+											(unsigned int)_irSensor->isObjectDetected(), \
+											_btnStatus);
+		//Serial.println(_btnStatus);
 		_modem->sendUdpMsg(_txMsg);
 		_elapsedPublishTime = millis();
 	}
@@ -338,18 +349,16 @@ void ConveyorUI::handleButtonActions(){
 	bool speedClicked = _speedBtn->isClicked();
 	bool onOffSwitchClicked = _onOffSwitch->isClicked();
 	bool onOffSwitchReleased = _onOffSwitch->isReleased();
+	bool onOffSwitchActive = _onOffSwitch->isActive();
 	//Serial.print(emergClicked);	Serial.print(emergActive);	Serial.print(emergReleased);Serial.print(startStopClicked);Serial.print(fwdRvsClicked); \
 	//Serial.print(speedClicked);Serial.print(onOffSwitchClicked);Serial.print(_onOffSwitch->isActive());Serial.println(onOffSwitchReleased);
-	uint8_t btnStatus = 0b00000000;
-	btnStatus += (uint8_t)emergClicked;
-	//Serial.println(btnStatus,BIN);
-	btnStatus = btnStatus << 1; btnStatus += (uint8_t)emergActive;
-	btnStatus = btnStatus << 1; btnStatus += (uint8_t)emergReleased;
-	btnStatus = btnStatus << 1; btnStatus += (uint8_t)startStopClicked;
-	btnStatus = btnStatus << 1; btnStatus += (uint8_t)fwdRvsClicked;
-	btnStatus = btnStatus << 1; btnStatus = (uint8_t)speedClicked;
-	btnStatus = btnStatus << 2;
-	//Serial.println(btnStatus,BIN);
+    _btnStatus.emergActive = emergActive;
+    _btnStatus.startStopClicked = startStopClicked;
+    _btnStatus.fwdRvsClicked = fwdRvsClicked;
+    _btnStatus.speedClicked = speedClicked;
+    _btnStatus.onOffSwitchActive = onOffSwitchActive;
+
+
 
 	/*****
 	 * emergency button
@@ -395,7 +404,7 @@ void ConveyorUI::handleButtonActions(){
 	 */
 	if (speedClicked == true){
 		_conveyor->speedUpDown();
-		//_elapsedPublishTime = 0; //that will make next if condition true immediately, report to GUI
+		_elapsedPublishTime = 0; //that will make next if condition true immediately, report to GUI
 	};
 
 	/*****
