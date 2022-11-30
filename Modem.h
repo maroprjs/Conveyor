@@ -11,6 +11,7 @@
 #include <Controllino.h>
 #include <Ethernet.h>
 #include <EthernetUdp.h>
+#include "Memory.h"
 #include "Defines.h"
 
 
@@ -19,12 +20,13 @@
 class Modem {
 
 public:
-	Modem(HardwareSerial* mmiPort, IPAddress serverIP, uint16_t serverPort, IPAddress ownIP);
+	Modem(HardwareSerial* mmiPort, Memory* memory);
 	void begin();
 	void loop();
 	HardwareSerial* mmiPort() {return _mmiPort;};
 	bool msgArrived();
 	void readMsg(char* msg);
+	String readMsgUntil(char terminator);
 	void sendUdpMsg(char* msg);
 	virtual ~Modem();
 private:
@@ -32,6 +34,7 @@ private:
 	IPAddress _ownIP;
 	uint16_t _serverPort;
 	HardwareSerial* _mmiPort;
+	Memory* _memory;
 	EthernetUDP* _udp;
 	static byte _mac[6];
 	unsigned int _localPort;

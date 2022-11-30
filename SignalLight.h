@@ -14,22 +14,23 @@
 
 class SignalLight {
 public:
-	SignalLight(uint8_t redPin, uint8_t yellowPin, uint8_t greenPin, uint8_t buzzerPin, uint8_t miniConvYellowPin);
+	SignalLight(uint8_t redPin, uint8_t yellowPin, uint8_t greenPin, uint8_t buzzerPin);
 	void begin();
 	void loop();
 	void greenOn();
 	void greenOff();
 	void yellowOn();
 	void yellowOff();
-	void miniConvYellowOn();
-	void miniConvYellowOff();
 	void redOn();
 	void redOff();
+	void allLightOn();
+	void allLightOff();
 	void buzzerOn();
 	void buzzerOff();
 	bool isRedOn(){ return _redLightOn; };
-	bool isYellowOn(){ return _yellowLightOn; };
+	bool isYellowOn(){ return _redLightOn; };
 	bool isGreenOn(){ return _greenLightOn; };
+	bool isAllLightOn(){ return _redLightOn && _redLightOn && _greenLightOn;};
 	bool isBuzzerOn(){ return _buzzerOn; };
 	virtual ~SignalLight();
 
@@ -38,12 +39,10 @@ private:
 	uint8_t _yellowPin;
 	uint8_t _greenPin;
 	uint8_t _buzzerPin;
-	uint8_t _miniConvYellowPin;
 	bool _redLightOn;
 	bool _yellowLightOn;
 	bool _greenLightOn;
 	bool _buzzerOn;
-	bool _miniConvYellowOn;
 	uint32_t _elapsedTime;
 
 };

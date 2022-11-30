@@ -22,9 +22,11 @@
 #include "SignalLight.h"
 #include "NfcReader.h"
 #include "InfraredSensor.h"
+#include "LEDButton.h"
 #include "ConveyorUI.h"
 #include "Defines.h"
-
+#include "Memory.h"
+#include "Raspberry.h"
 
 /////////defines //////////////////////
 
@@ -32,13 +34,15 @@
 
 ////////// Object Instantiation //////////////////
 /*************************************************************
+ * Memory - storage for c0onfiguration (e.g. IP addresses) on EEPROM
+ */
+Memory memory;
+
+
+/*************************************************************
  * modem - local MMI represented by serial interface, WebUI by server IP and port
  */
-IPAddress udpServerIP(UDP_SERVER_IP);
-IPAddress ownIP(OWN_IP);
-uint16_t udpServerPort = UDP_SERVER_PORT;
-
-Modem modem(&Serial, udpServerIP, udpServerPort, ownIP);
+Modem modem(&Serial,&memory);
 
 
 /*************************************************************
@@ -47,9 +51,9 @@ Modem modem(&Serial, udpServerIP, udpServerPort, ownIP);
 Conveyor conveyor(ELECTRONICS_PWR_PIN, MOTOR_PWR_PIN, SPEED_PIN, HALL_SENSOR_PIN, FORWARD_PIN, REVERSE_PIN );
 
 /*************************************************************
- * Signal Light Tower
+ * Signal Light Tower or status lights
  */
-SignalLight signalLight(RED_PIN, YELLOW_PIN, GREEN_PIN, BUZZER_PIN, MINI_CONV_YELLOW_PIN);
+SignalLight signalLight(RED_PIN, YELLOW_PIN, GREEN_PIN, BUZZER_PIN);
 
 /*************************************************************
  * NFC Reader
@@ -63,9 +67,43 @@ InfraredSensor irSensor(IR_SENSOR_PIN, &conveyor);
 
 
 /*************************************************************
+ * Start/Stop Button
+ */
+LEDButton startStopButton(STARTSTOP_BUTTON_PIN, STARTSTOP_LED_PIN);
+
+
+/*************************************************************
+ * FWD/REV Button
+ */
+LEDButton fwdRevButton(FWDREV_BUTTON_PIN, FWDREV_LED_PIN);
+
+/*************************************************************
+ * Speed Button
+ */
+LEDButton speedButton(SPEED_BUTTON_PIN, SPEED_LED_PIN);
+
+/*************************************************************
+ * Emergency Button
+ */
+LEDButton emergButton(EMERGENCY_BUTTON_PIN, RED_PIN);
+
+/*************************************************************
+ * ON OFF Switch for Raspberry
+ */
+LEDButton onOffSwitch(ONOFF_SWITCH_PIN, ONOFF_SWITCH_LED_PIN);
+
+
+/*************************************************************
+ * Raspberry -exposes the on-off button-
+ */
+Raspberry raspberry(RASPBERRY_ONOFF_BUTTON_PIN,ONOFF_SENSE_PIN, RASPBERRY_FULLPWR_PIN);
+
+
+
+/*************************************************************
  * ConveyorUI
  */
-ConveyorUI conveyorUI(&modem, &conveyor, &signalLight, &nfcReader, &irSensor);
+ConveyorUI conveyorUI(&modem, &conveyor, &signalLight, &nfcReader, &irSensor, &startStopButton, &fwdRevButton, &speedButton, &emergButton, &onOffSwitch, &raspberry  );
 
 
 
@@ -75,11 +113,18 @@ void setup()
 {
 	Serial.begin(9600);
 	delay(100);
+	memory.begin();
 	modem.begin();
 	conveyor.begin();
 	signalLight.begin();
 	nfcReader.begin();
 	irSensor.begin();
+	startStopButton.begin();
+	fwdRevButton.begin();
+	speedButton.begin();
+	emergButton.begin();
+	onOffSwitch.begin();
+	raspberry.begin();
 	conveyorUI.begin();
 
 
@@ -93,6 +138,12 @@ void loop()
 	conveyor.loop();
 	signalLight.loop();
 	nfcReader.loop();
+	startStopButton.loop();
+	fwdRevButton.loop();
+	speedButton.loop();
+	emergButton.loop();
+	onOffSwitch.loop();
+	raspberry.loop();
 	conveyorUI.loop();
 }
 

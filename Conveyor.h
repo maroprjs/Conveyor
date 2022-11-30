@@ -19,7 +19,8 @@
 #define STATE_TRANSITION_TIME_MS 25
 
 
-
+#define NUM_OF_SPEED_VALUES 10
+#define SPEED_MAPPING  {0,25,50,85,110,135,160,185,210,255}
 
 
 class Conveyor {
@@ -50,6 +51,8 @@ public:
 	bool isElectronicsPwrOn(){ return _electronicsPwrOn; };
 	int readSpeed(){ return _currentSpeed;}; //PWM value between 0....255
 	bool isForward(){ return _isForward;};
+	int speedDelta(){return _speedDelta;};
+	void speedUpDown();
 
 	virtual ~Conveyor();
 
@@ -91,6 +94,10 @@ private:
 	DirectionChangeState _directionChangeState;
 	uint32_t _nextStateTransition;
 	uint32_t _transitionStartTime;
+	int _speedDelta;
+	bool _minSpeedReached;
+	bool _maxSpeedReached;
+
 
 };
 

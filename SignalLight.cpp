@@ -7,17 +7,15 @@
 
 #include "SignalLight.h"
 
-SignalLight::SignalLight(uint8_t redPin, uint8_t yellowPin, uint8_t greenPin, uint8_t buzzerPin, uint8_t miniConvYellowPin) {
+SignalLight::SignalLight(uint8_t redPin, uint8_t yellowPin, uint8_t greenPin, uint8_t buzzerPin) {
 	_redPin = redPin;
 	_yellowPin = yellowPin;
 	_greenPin = greenPin;
 	_buzzerPin = buzzerPin;
-	_miniConvYellowPin = miniConvYellowPin;
 	_redLightOn = false;
 	_yellowLightOn = false;
 	_greenLightOn = false;
 	_buzzerOn = false;
-	_miniConvYellowOn = false;
 	_elapsedTime = 0;
 
 };
@@ -27,12 +25,10 @@ void SignalLight::begin(){
 	pinMode(_yellowPin, OUTPUT);
 	pinMode(_greenPin, OUTPUT);
 	pinMode(_buzzerPin, OUTPUT);
-	pinMode(_miniConvYellowPin, OUTPUT);
 	digitalWrite(_redPin, LOW);
 	digitalWrite(_yellowPin, LOW);
 	digitalWrite(_greenPin, LOW);
 	digitalWrite(_buzzerPin, LOW);
-	digitalWrite(_miniConvYellowPin, LOW);
 };
 
 void SignalLight::loop(){
@@ -89,6 +85,19 @@ void SignalLight::greenOff(){
 	_greenLightOn = false;
 };
 
+void SignalLight::allLightOn(){
+	redOn();
+	yellowOn();
+	greenOn();
+
+};
+
+void SignalLight::allLightOff(){
+	redOff();
+	yellowOff();
+	greenOff();
+};
+
 void SignalLight::buzzerOn(){
 	digitalWrite(_buzzerPin, HIGH);
 	_buzzerOn = true;
@@ -99,24 +108,7 @@ void SignalLight::buzzerOff(){
 	_buzzerOn = false;
 };
 
-/**
- *
- * small yellow light emulates industrial light column, where:
- *
- * -small yellow bulb acts as normal yellow
- * -but red overrides yellow and is represented by quick flashing
- * -green no function in this case
- *
- */
-void SignalLight::miniConvYellowOn(){
-		digitalWrite(_miniConvYellowPin, HIGH);
-		_miniConvYellowOn = true;
-};
 
-void SignalLight::miniConvYellowOff(){
-		digitalWrite(_miniConvYellowPin, LOW);
-		_miniConvYellowOn = false;
-};
 
 SignalLight::~SignalLight() {
 	// TODO Auto-generated destructor stub

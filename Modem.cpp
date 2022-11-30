@@ -8,25 +8,35 @@
 #include "Modem.h"
 
 
-Modem::Modem(HardwareSerial* mmiPort, IPAddress serverIP, uint16_t serverPort, IPAddress ownIP){
+Modem::Modem(HardwareSerial* mmiPort, Memory* memory){
 	_mmiPort = mmiPort;
-    _serverIP = serverIP;
-    _ownIP = ownIP;
-    _serverPort =  serverPort;
+	_memory = memory;
+    //_serverIP = UDP_SERVER_IP;
+    //_ownIP = IPAddress(OWN_IP);
+    //_serverPort =  UDP_SERVER_PORT;
+    _serverIP = _memory->udpServerIP();
+    _ownIP = _memory->ownIP();
+    _serverPort = _memory->udpServerPort();
     _localPort = LOCAL_UDP_PORT;
     _packetSize = 0;
     //_packetBuffer = new char[UDP_TX_PACKET_MAX_SIZE];
     _udp = new EthernetUDP;
 }
 
+
 byte Modem::_mac[] = MAC_ADDRESS;
 
 void Modem::begin(){
-	Ethernet.begin(_mac, _ownIP);
+	if (_ownIP == IPAddress(0,0,0,0)){
+		Serial.println(""); Serial.print("dhcp ");
+		Ethernet.begin(_mac);
+	}else{
+		Serial.println(""); Serial.println("static IP ");
+		Ethernet.begin(_mac, _ownIP);
+	}
 	//if (Ethernet.linkStatus() == LinkOFF) { //not working on WIZ 5100
 	//    Serial.println("Ethernet cable is not connected.");
 	//};
-	Serial.println("");
 	Serial.println(Ethernet.localIP());
 	_udp->begin(_localPort);
 }
@@ -69,8 +79,13 @@ bool Modem::msgArrived(){
 
 void Modem::readMsg(char* msg){
    _udp->read(msg, UDP_TX_PACKET_MAX_SIZE);
-
 }
+
+String Modem::readMsgUntil(char terminator){
+   String msg = _udp->readStringUntil(terminator);
+   return msg;
+}
+
 
 void Modem::sendUdpMsg(char* msg){
 	Serial.print("tx udp: "); Serial.println(msg);

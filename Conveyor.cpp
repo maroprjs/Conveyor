@@ -40,6 +40,9 @@ Conveyor::Conveyor(uint8_t electronicsPwrPin, uint8_t motorPwrPin, uint8_t speed
 	_isForward = true;
 	_nextStateTransition = 0;
 	_transitionStartTime = 0;
+	_speedDelta = 0;
+	_minSpeedReached = true;
+	_maxSpeedReached = false;
 
 }
 
@@ -136,9 +139,38 @@ void Conveyor::setSpeed(int speed){
 	speed = (speed < SPEED_ZERO) ? SPEED_ZERO : speed;
 	Serial.print("setSpeed: ");Serial.println(speed);
 	analogWrite(_speedPin, speed);
+	_speedDelta = speed - _currentSpeed;
 	_currentSpeed = speed;
 }
 
+
+void Conveyor::speedUpDown(){
+	uint8_t speedMap[NUM_OF_SPEED_VALUES] = SPEED_MAPPING;
+	int i;
+
+	for (i = 0; i < NUM_OF_SPEED_VALUES; i++){ //find speed index
+		if (_currentSpeed == speedMap[i]) {
+			break;
+		};
+	};
+	if (_currentSpeed == speedMap[NUM_OF_SPEED_VALUES - 1]){
+		_maxSpeedReached = true;
+		_minSpeedReached = false;
+	};
+	if (_currentSpeed == speedMap[0]){
+		_minSpeedReached = true;
+		_maxSpeedReached = false;
+	};
+	if (_maxSpeedReached == true){
+		i--;
+	};
+	if (_minSpeedReached == true){
+		i++;
+	};
+	setSpeed(speedMap[i]);
+
+
+}
 
 void Conveyor::off(){
 	electronicsPwrOff();

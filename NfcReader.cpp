@@ -6,6 +6,7 @@
  */
 
 #include "NfcReader.h"
+#include "Defines.h"
 
 
 NfcReader::NfcReader() {
