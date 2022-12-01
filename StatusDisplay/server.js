@@ -136,7 +136,7 @@ ioSocket.sockets.on('connection', function (socket) {
 // udp listener controllino:
 udpdserver1.on('listening', function () {
     var address = udpdserver1.address();
-    console.log('UDP Server listening on ' + address.address + ":" + address.port);
+    console.log('UDP Server for Controllino listening on ' + address.address + ":" + address.port);
 });
 
 udpdserver1.on('message', function (message, remote) {
@@ -163,7 +163,7 @@ udpdserver1.bind(THIS_SERVER_UDP_PORT_1, THIS_SERVER_IP);
 // udp listener XDK:
 udpdserver2.on('listening', function () {
     var address = udpdserver2.address();
-    console.log('UDP Server listening on ' + address.address + ":" + address.port);
+    console.log('UDP Server for XDK listening on ' + address.address + ":" + address.port);
 });
 
 udpdserver2.on('message', function (message, remote) {
