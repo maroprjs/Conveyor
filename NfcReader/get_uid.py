@@ -10,6 +10,13 @@ import RPi.GPIO as GPIO
 from pn532 import *
 
 
+def get_uid_string(uid):
+    uid_str = ''
+    for i in uid:
+        hex_str = str(hex(i))
+        uid_str = uid_str + hex_str[2:]
+    return uid_str
+
 if __name__ == '__main__':
     try:
         pn532 = PN532_SPI(debug=False, reset=20, cs=4)
@@ -30,7 +37,7 @@ if __name__ == '__main__':
             # Try again if no card is available.
             if uid is None:
                 continue
-            print('Found card with UID:', [hex(i) for i in uid])
+            print('Found card with UID:', [hex(i) for i in uid], 'as string: ', get_uid_string(uid))
     except Exception as e:
         print(e)
     finally:
