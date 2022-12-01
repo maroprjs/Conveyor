@@ -77,6 +77,8 @@
 
 
 //IP related
+//(NOTE: if you change those values after second upload to controllino, factory reset needs to be done via serial
+//-> 'X' -> 'factoryreset' -> 'exit' -> manual reboot)
 //#define OWN_IP 10, 200, 20, 161
 #define OWN_IP  0,0,0,0 //dhcp
 #define UDP_SERVER_IP 10, 200, 20, 160 //application server f�r e.g. GUI to send status information
@@ -85,7 +87,7 @@
 #define LOCAL_UDP_PORT 3333
 
 //Memory (EEPROM) related
-#define EEPROM_UPDATED 1 //Increase this whenever memory config for EEPROM changes, the initial value is 255
+#define EEPROM_UPDATED 1 //Increase this whenever memory config for EEPROM changes, e.g. additional fields the initial value is 255
 #define SERVERPORT_UNITIALIZED 65535
 #define IP_UNINITIALIZED 255,255,255,255
 

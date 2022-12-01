@@ -324,13 +324,29 @@ void ConveyorUI::publishStatus(){
 void ConveyorUI::_eXtendedUI(){
 	//_cmdString = _modem->mmiPort()->readStringUntil('\n');
 	_cmdString.trim();
+	_cmdString.replace(" ", "");
+	_cmdString.toLowerCase();
 	Serial.println(_cmdString);
 	if (_cmdString == "exit") {
 		_eXtendedUIActive = false;
 		if (_signalLight->isAllLightOn()) _signalLight->allLightOff(); //all status lights flashing to indicate extended UI mode (see below in publishStatus() method)
 		Serial.println("exit eXtended UI");
 	};
-	if (_cmdString == "thisisatest") Serial.println("THIS IS A TEST");
+	//_modem->_memory->ownIP(IPAddress(<StringToIP>))
+	//case eXtendendedArg.OWNIP:
+	//   _memory.
+	//   break
+	//case eXtendendedArg.SERVERIP:
+	//   break
+	//case eXtendendedArg.SERVERPORT:
+	//   break
+
+	//if (_cmdString == "thisisatest") Serial.println("THIS IS A TEST");
+	//if (_cmdString == "setownip") eXtendendedArg.OWNIP;
+	//if (_cmdString == "setserverip") eXtendendedArg.SERVERIP;
+	//if (_cmdString == "setserverport") eXtendendedArg.SERVERPORT;
+	if (_cmdString == "factoryreset") _modem->_memory->factoryReset();
+
 	_cmdString = "";
 };
 

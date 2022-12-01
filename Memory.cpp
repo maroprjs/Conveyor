@@ -61,12 +61,12 @@ serverPort_t Memory::udpServerPort(){
 }
 
 void Memory::factoryReset(){
-	unsigned int eeLength = EEPROM.length();
-	Serial.print("Resetting Memory, size: ");Serial.print(eeLength);
+	unsigned int eeLength = USED_EE_SPACE; //EEPROM.length();
+	Serial.print("Resetting Memory, size to be cleaned: ");Serial.print(eeLength);
 	for (unsigned int i = 0; i <= eeLength; i++){
 		EEPROM.write(i, 255);
 	};
-	//begin();
+	begin();
 }
 
 Memory::~Memory() {

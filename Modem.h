@@ -29,12 +29,12 @@ public:
 	String readMsgUntil(char terminator);
 	void sendUdpMsg(char* msg);
 	virtual ~Modem();
+	Memory* _memory;
 private:
 	IPAddress _serverIP;
 	IPAddress _ownIP;
 	uint16_t _serverPort;
 	HardwareSerial* _mmiPort;
-	Memory* _memory;
 	EthernetUDP* _udp;
 	static byte _mac[6];
 	unsigned int _localPort;
