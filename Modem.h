@@ -28,9 +28,11 @@ public:
 	void readMsg(char* msg);
 	String readMsgUntil(char terminator);
 	void sendUdpMsg(char* msg);
+	IPAddress str2IP(String str);
 	virtual ~Modem();
 	Memory* _memory;
 private:
+	int getIpBlock(int index, String str);
 	IPAddress _serverIP;
 	IPAddress _ownIP;
 	uint16_t _serverPort;

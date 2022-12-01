@@ -11,13 +11,13 @@
 Modem::Modem(HardwareSerial* mmiPort, Memory* memory){
 	_mmiPort = mmiPort;
 	_memory = memory;
-    //_serverIP = UDP_SERVER_IP;
-    //_ownIP = IPAddress(OWN_IP);
-    //_serverPort =  UDP_SERVER_PORT;
-    _serverIP = _memory->udpServerIP();
-    _ownIP = _memory->ownIP();
-    _serverPort = _memory->udpServerPort();
+    _serverIP = UDP_SERVER_IP;
+    _ownIP = IPAddress(OWN_IP);
+    _serverPort =  UDP_SERVER_PORT;
     _localPort = LOCAL_UDP_PORT;
+    //_serverIP = _memory->udpServerIP();
+    //_ownIP = _memory->ownIP();
+    //_serverPort = _memory->udpServerPort();
     _packetSize = 0;
     //_packetBuffer = new char[UDP_TX_PACKET_MAX_SIZE];
     _udp = new EthernetUDP;
@@ -27,6 +27,11 @@ Modem::Modem(HardwareSerial* mmiPort, Memory* memory){
 byte Modem::_mac[] = MAC_ADDRESS;
 
 void Modem::begin(){
+    _serverIP = _memory->udpServerIP();
+    Serial.print("serverIP: ");Serial.println(_serverIP);
+    _ownIP = _memory->ownIP();
+    _serverPort = _memory->udpServerPort();
+    Serial.print("serverPort: ");Serial.println(_serverPort);
 	if (_ownIP == IPAddress(0,0,0,0)){
 		Serial.println(""); Serial.print("dhcp ");
 		Ethernet.begin(_mac);
@@ -94,7 +99,29 @@ void Modem::sendUdpMsg(char* msg){
 	_udp->endPacket();
 }
 
+IPAddress Modem::str2IP(String str) {
 
+    IPAddress ret( getIpBlock(0,str),getIpBlock(1,str),getIpBlock(2,str),getIpBlock(3,str) );
+    return ret;
+
+}
+
+int Modem::getIpBlock(int index, String str) {
+    char separator = '.';
+    int found = 0;
+    int strIndex[] = {0, -1};
+    int maxIndex = str.length()-1;
+
+    for(int i=0; i<=maxIndex && found<=index; i++){
+      if(str.charAt(i)==separator || i==maxIndex){
+          found++;
+          strIndex[0] = strIndex[1]+1;
+          strIndex[1] = (i == maxIndex) ? i+1 : i;
+      }
+    }
+
+    return found>index ? str.substring(strIndex[0], strIndex[1]).toInt() : 0;
+}
 
 Modem::~Modem() {
 	// TODO Auto-generated destructor stub

@@ -39,6 +39,7 @@ ConveyorUI::ConveyorUI(Modem* modem, Conveyor* conveyor, SignalLight* signalLigh
     _btnStatus.placeholder16 = 0;
     _btnStatus.placeholder17 = 0;
     _btnStatus.placeholder18 = 0;
+    _extendendedUIParams = NONE;
 
 
 }
@@ -332,20 +333,50 @@ void ConveyorUI::_eXtendedUI(){
 		if (_signalLight->isAllLightOn()) _signalLight->allLightOff(); //all status lights flashing to indicate extended UI mode (see below in publishStatus() method)
 		Serial.println("exit eXtended UI");
 	};
-	//_modem->_memory->ownIP(IPAddress(<StringToIP>))
-	//case eXtendendedArg.OWNIP:
-	//   _memory.
-	//   break
-	//case eXtendendedArg.SERVERIP:
-	//   break
-	//case eXtendendedArg.SERVERPORT:
-	//   break
-
 	//if (_cmdString == "thisisatest") Serial.println("THIS IS A TEST");
-	//if (_cmdString == "setownip") eXtendendedArg.OWNIP;
-	//if (_cmdString == "setserverip") eXtendendedArg.SERVERIP;
-	//if (_cmdString == "setserverport") eXtendendedArg.SERVERPORT;
-	if (_cmdString == "factoryreset") _modem->_memory->factoryReset();
+	switch (_extendendedUIParams){
+	   case ExtendendedUIParams::NONE :{
+			if (_cmdString == "setownip") _extendendedUIParams = SET_OWN_IP;
+			if (_cmdString == "setserverip") _extendendedUIParams = SET_UDPSERVER_IP;
+			if (_cmdString == "setserverport") _extendendedUIParams = SET_UDPSERVER_PORT;
+			if (_cmdString == "factoryreset") {
+				_modem->_memory->factoryReset();
+				_modem->begin();
+				_cmdString = "exit";
+				_eXtendedUI();
+			};
+
+	   };
+	   break;
+	   case ExtendendedUIParams::SET_OWN_IP :{
+		   //Serial.print("set own IP: ");Serial.println(_modem->str2IP(_cmdString));
+		   _modem->_memory->ownIP(_modem->str2IP(_cmdString));
+		   _extendendedUIParams = NONE;
+		   _modem->begin();
+		   _cmdString = "exit";
+		   _eXtendedUI();
+
+	   };
+	   break;
+	   case ExtendendedUIParams::SET_UDPSERVER_IP :{
+		   _modem->_memory->udpServerIP(_modem->str2IP(_cmdString));
+		   _extendendedUIParams = NONE;
+		   _modem->begin();
+		   _cmdString = "exit";
+		   _eXtendedUI();
+
+	   };
+	   break;
+	   case ExtendendedUIParams::SET_UDPSERVER_PORT :{
+		   _modem->_memory->udpServerPort(_cmdString.toInt());
+		   _extendendedUIParams = NONE;
+		   _modem->begin();
+		   _cmdString = "exit";
+		   _eXtendedUI();
+
+	   };
+	   break;
+	}
 
 	_cmdString = "";
 };

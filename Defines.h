@@ -77,12 +77,13 @@
 
 
 //IP related
-//(NOTE: if you change those values after second upload to controllino, factory reset needs to be done via serial
-//-> 'X' -> 'factoryreset' -> 'exit' -> manual reboot)
+//(NOTE: if you change OWN_IP, UDP_SERVER_IP or UDP_SERVER_PORT for second upload to controllino, factory reset needs to be done via serial
+//-> 'X' -> 'factoryreset' )
 //#define OWN_IP 10, 200, 20, 161
 #define OWN_IP  0,0,0,0 //dhcp
 #define UDP_SERVER_IP 10, 200, 20, 160 //application server f�r e.g. GUI to send status information
 #define UDP_SERVER_PORT 5555
+
 #define MAC_ADDRESS { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }
 #define LOCAL_UDP_PORT 3333
 

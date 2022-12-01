@@ -37,13 +37,17 @@ struct ButtonStatus {
 	uint16_t placeholder18 : 1;
 };
 
-//struct ButtonStatus {
-//	uint8_t emergActive : 1, startStopClicked : 1, fwdRvsClicked : 1, speedClicked : 1, onOffSwitchActive : 1, \
-//	        placeholder1 : 1, placeholder2 : 1, placeholder3 : 1;
-//};
 
 
 class ConveyorUI {
+
+	enum ExtendendedUIParams{
+		NONE,
+		SET_OWN_IP,
+		SET_UDPSERVER_IP,
+		SET_UDPSERVER_PORT
+	};
+
 public:
 	ConveyorUI(Modem* modem, Conveyor* conveyor, SignalLight* signalLight, NfcReader* nfcReader, InfraredSensor* irSensor,  \
 			   LEDButton* startStpBtn, LEDButton* fwdRvsBtn, LEDButton* speedBtn, LEDButton* emergBtn, LEDButton* onOffSwitch, \
@@ -82,6 +86,7 @@ private:
 	bool _emergencyActive;
 	uint8_t _speedMap[NUM_OF_SPEED_VALUES] = SPEED_MAPPING;
 	ButtonStatus _btnStatus;
+	ExtendendedUIParams _extendendedUIParams;
 };
 
 #endif /* CONVEYORUI_H_ */
