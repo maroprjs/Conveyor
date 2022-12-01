@@ -33,9 +33,13 @@ The server based on NodeJs, found on "server"-branch above or StatusDisplay bran
  following commands can be sent:
  
  "factory reset" - it will initialize the EEPROM to it's default (all bytes to 255) and read the OWN_IP, UDPSERVER_IP and UDPSERVER_PORT from the definitions of the original used Defines.h and write them into the EEPROM 
+ 
  "set own ip" - sets the controllino's own ip addresses and stores the value in EEPROM. The value "0.0.0.0" means dhcp in use.
+ 
  "set server ip" - will save new IP address for the udp server in EEPROM and take it into use
+ 
  "set server port" - will save the receiving port for the udp server in EEPROM and takes it into use
+ 
  
  For the latter three commands: First send the command (with ot without space) , e.g "setownip", will wait for entry of IP address in string format (but there is no indication) e.g. send "192.168.0.111".....after that the controllino IP e.g. would have address 192.168.0.111 and the status lights stop flashing.
  If you made a  mistake, the "factoryreset" via serial interface will revert to initial configuration. 
