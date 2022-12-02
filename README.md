@@ -45,3 +45,4 @@ The server based on NodeJs, found on "server"-branch above or StatusDisplay bran
  If you made a  mistake, the "factoryreset" via serial interface will revert to initial configuration. 
  
  
+Factory reset can also be initiated by pressing start/stop-, fwd/Rev-and speed- button at the same time for 10 seconds. 
