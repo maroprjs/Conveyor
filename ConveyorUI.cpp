@@ -501,10 +501,10 @@ void ConveyorUI::handleSignalLightActions(){
 	   else{
 		   _signalLight->allLightOff();
 	   };
-	   if (_factoryResetActive == true){
-		   _factoryResetActive = false;
-		   _signalLight->buzzerOff();
-	   }
+	};
+	if (_factoryResetActive == true){
+		_factoryResetActive = false;
+		_signalLight->buzzerOff();
 	};
 
 }
