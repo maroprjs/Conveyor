@@ -436,6 +436,7 @@ void ConveyorUI::handleButtonActions(){
 			_conveyor->motorPwrOffReq();
 		}else{
 			_conveyor->motorPwrOnReq();
+			_conveyor->setSpeed(_speedMap[INITIAL_SPEED]);
 		}
 		_elapsedPublishTime = 0; //that will make next if condition true immediately, report to GUI
 	};

@@ -16,6 +16,7 @@
 #define HALLS_PER_ROUND 32
 #define RPM_FACTOR 60 * SECONDS / HALLS_PER_ROUND
 #define SPEED_ZERO  0 //PWM 0 doesn't produce 0V, so we add an offset
+#define INITIAL_SPEED 4
 #define STATE_TRANSITION_TIME_MS 25
 
 
