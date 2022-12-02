@@ -40,6 +40,8 @@ ConveyorUI::ConveyorUI(Modem* modem, Conveyor* conveyor, SignalLight* signalLigh
     _btnStatus.placeholder17 = 0;
     _btnStatus.placeholder18 = 0;
     _extendendedUIParams = NONE;
+    _factoryResetRequested = false;
+    _factoryResetTime = 0;
 
 
 }
@@ -462,6 +464,22 @@ void ConveyorUI::handleButtonActions(){
 	};
 	if (onOffSwitchReleased == true){
 		_raspberry->switchOff();
+	}
+
+	/*****
+	 * factory reset combination (start/stop, fwdRev- and speed buttons pressed for 10 secs)
+	 */
+	if (_startStpBtn->isActive() && _fwdRvsBtn->isActive() && _speedBtn->isActive() == true){
+		if (_factoryResetRequested == false){
+			_factoryResetTime = millis() + FACTORYRESET_ELAPSE_TIME;
+			_factoryResetRequested = true;
+		}
+	}else{
+		_factoryResetRequested = false;
+	};
+	if ((millis() >= _factoryResetTime) && ( _factoryResetRequested == true)){
+		_factoryResetRequested = false;
+         _modem->_memory->factoryReset();
 	}
 
 }

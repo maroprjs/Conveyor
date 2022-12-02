@@ -18,6 +18,8 @@
 #define PUBLISH_TIME_INTERVAL_MS 1000
 #define PUBLISH_MSG_ID 1
 
+#define FACTORYRESET_ELAPSE_TIME 10000 //[ms]
+
 struct ButtonStatus {
 	uint16_t emergActive : 1;
 	uint16_t startStopClicked : 1;
@@ -87,6 +89,8 @@ private:
 	uint8_t _speedMap[NUM_OF_SPEED_VALUES] = SPEED_MAPPING;
 	ButtonStatus _btnStatus;
 	ExtendendedUIParams _extendendedUIParams;
+	bool _factoryResetRequested;
+	uint32_t _factoryResetTime;
 };
 
 #endif /* CONVEYORUI_H_ */
