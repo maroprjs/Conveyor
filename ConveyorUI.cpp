@@ -42,6 +42,7 @@ ConveyorUI::ConveyorUI(Modem* modem, Conveyor* conveyor, SignalLight* signalLigh
     _extendendedUIParams = NONE;
     _factoryResetRequested = false;
     _factoryResetTime = 0;
+    _factoryResetActive = false;
 
 
 }
@@ -342,6 +343,9 @@ void ConveyorUI::_eXtendedUI(){
 			if (_cmdString == "setserverip") _extendendedUIParams = SET_UDPSERVER_IP;
 			if (_cmdString == "setserverport") _extendendedUIParams = SET_UDPSERVER_PORT;
 			if (_cmdString == "factoryreset") {
+				_signalLight->buzzerOn(); //to give audio feedback to user that reset is ongoing
+				_factoryResetActive = true;
+				_elapsedPublishTime = millis(); //so the buzzer is at least ON for one interval (1 second)
 				_modem->_memory->factoryReset();
 				_modem->begin();
 				_cmdString = "exit";
@@ -479,7 +483,11 @@ void ConveyorUI::handleButtonActions(){
 	};
 	if ((millis() >= _factoryResetTime) && ( _factoryResetRequested == true)){
 		_factoryResetRequested = false;
-         _modem->_memory->factoryReset();
+		_signalLight->buzzerOn(); //to give audio feedback to user that reset is ongoing
+		_factoryResetActive = true;
+		_elapsedPublishTime = millis(); //so the buzzer is at least ON for one interval (1 second)
+        _modem->_memory->factoryReset();
+        _modem->begin();
 	}
 
 }
@@ -493,7 +501,12 @@ void ConveyorUI::handleSignalLightActions(){
 	   else{
 		   _signalLight->allLightOff();
 	   };
+	   if (_factoryResetActive == true){
+		   _factoryResetActive = false;
+		   _signalLight->buzzerOff();
+	   }
 	};
+
 }
 
 ConveyorUI::~ConveyorUI() {

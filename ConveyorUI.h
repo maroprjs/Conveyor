@@ -91,6 +91,7 @@ private:
 	ExtendendedUIParams _extendendedUIParams;
 	bool _factoryResetRequested;
 	uint32_t _factoryResetTime;
+	bool _factoryResetActive;
 };
 
 #endif /* CONVEYORUI_H_ */
