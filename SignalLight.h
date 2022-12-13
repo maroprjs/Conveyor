@@ -28,7 +28,7 @@ public:
 	void buzzerOn();
 	void buzzerOff();
 	bool isRedOn(){ return _redLightOn; };
-	bool isYellowOn(){ return _redLightOn; };
+	bool isYellowOn(){ return _yellowLightOn; };
 	bool isGreenOn(){ return _greenLightOn; };
 	bool isAllLightOn(){ return _redLightOn && _redLightOn && _greenLightOn;};
 	bool isBuzzerOn(){ return _buzzerOn; };
