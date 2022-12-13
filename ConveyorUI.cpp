@@ -51,7 +51,8 @@ void ConveyorUI::begin(){
 	if (_onOffSwitch->isActive() == false){
 		_raspberry->switchOff();
 	}else{
-		//_raspberry->switchOn();<-this is not needed since click event is generated in loop
+		_raspberry->switchOn(); //in case siwtch is lateched when power supplied to suitcase
+		_onOffSwitch->ledOn();
 	};
 	_elapsedPublishTime = millis();
 }
@@ -436,7 +437,7 @@ void ConveyorUI::handleButtonActions(){
 			_conveyor->motorPwrOffReq();
 		}else{
 			_conveyor->motorPwrOnReq();
-			_conveyor->setSpeed(_speedMap[INITIAL_SPEED]);
+			if (_conveyor->readSpeed() == _speedMap[SPEED_ZERO]) _conveyor->setSpeed(_speedMap[INITIAL_SPEED]);
 		}
 		_elapsedPublishTime = 0; //that will make next if condition true immediately, report to GUI
 	};
