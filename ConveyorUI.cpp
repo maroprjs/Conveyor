@@ -417,18 +417,26 @@ void ConveyorUI::handleButtonActions(){
 	/*****
 	 * emergency button
 	 */
+    if (emergActive == true){
+    	_signalLight->greenOff();
+    	_signalLight->yellowOff();
+    	_signalLight->redOn();
+    	//the activeFlag for the UI is set below
+    }
 	if (emergClicked == true){
 		_conveyor->motorPwrOffReq();
 		_conveyor->electronicsPwrOffReq();
 		serialMMI('b'); //buzzer on
+		_emergencyActive = true; //disables serial and udp interface
 		//_elapsedPublishTime = 0; //that will make next if condition true immediately, report to GUI <==no need to report immediately, "active" flag reported periodically
 	};
 	if (emergReleased == true){
 		serialMMI('c'); //buzzer off
 		_conveyor->electronicsPwrOnReq();
+		_emergencyActive = false;
+		if (emergActive == true) _signalLight->redOff();
 		//_elapsedPublishTime = 0; //that will make next if condition true immediately, report to GUI <==no need to report immediately, "active" flag reported periodically
 	};
-
 	/*****
 	 * start/stop button for conveyor
 	 */
