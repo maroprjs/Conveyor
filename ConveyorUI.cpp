@@ -437,38 +437,43 @@ void ConveyorUI::handleButtonActions(){
 		if (emergActive == true) _signalLight->redOff();
 		//_elapsedPublishTime = 0; //that will make next if condition true immediately, report to GUI <==no need to report immediately, "active" flag reported periodically
 	};
-	/*****
-	 * start/stop button for conveyor
-	 */
-	if (startStopClicked == true){
-		if (_conveyor->isMotorPwrOn() == true){
-			_conveyor->motorPwrOffReq();
-		}else{
-			_conveyor->motorPwrOnReq();
-			if (_conveyor->readSpeed() == _speedMap[SPEED_ZERO]) _conveyor->setSpeed(_speedMap[INITIAL_SPEED]);
-		}
-		_elapsedPublishTime = 0; //that will make next if condition true immediately, report to GUI
+
+	if (_emergencyActive == false){ //disable conveyor control: TODO: make better design!
+
+		/*****
+		 * start/stop button for conveyor
+		 */
+		if (startStopClicked == true){
+			if (_conveyor->isMotorPwrOn() == true){
+				_conveyor->motorPwrOffReq();
+			}else{
+				_conveyor->motorPwrOnReq();
+				if (_conveyor->readSpeed() == _speedMap[SPEED_ZERO]) _conveyor->setSpeed(_speedMap[INITIAL_SPEED]);
+			}
+			_elapsedPublishTime = 0; //that will make next if condition true immediately, report to GUI
+		};
+
+		/*****
+		 * forward/reverse button
+		 */
+		if (fwdRvsClicked == true){
+			if (_conveyor->isForward() == true){
+				_conveyor->moveReverseReq();
+			}else{
+				_conveyor->moveForwardReq();
+			}
+			_elapsedPublishTime = 0; //that will make next if condition true immediately, report to GUI
+		};
+
+		/*****
+		 * conveyor speed button
+		 */
+		if (speedClicked == true){
+			_conveyor->speedUpDown();
+			_elapsedPublishTime = 0; //that will make next if condition true immediately, report to GUI
+		};
 	};
 
-	/*****
-	 * forward/reverse button
-	 */
-	if (fwdRvsClicked == true){
-		if (_conveyor->isForward() == true){
-			_conveyor->moveReverseReq();
-		}else{
-			_conveyor->moveForwardReq();
-		}
-		_elapsedPublishTime = 0; //that will make next if condition true immediately, report to GUI
-	};
-
-	/*****
-	 * conveyor speed button
-	 */
-	if (speedClicked == true){
-		_conveyor->speedUpDown();
-		_elapsedPublishTime = 0; //that will make next if condition true immediately, report to GUI
-	};
 
 	/*****
 	 * suitcase on/off switch handling for raspberry graceful shutdown
