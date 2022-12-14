@@ -232,7 +232,10 @@ void Conveyor::moveReverseReq(){
  */
 void Conveyor::switchDirection(){
 	bool doesntStop = false;
-	if (_electronicsInitialized == false) return;//this refers to setSpeed() function...needs to be called at least once before ddirection change
+	uint8_t speedMap[NUM_OF_SPEED_VALUES] = SPEED_MAPPING;
+	if (_electronicsInitialized == false) { //return;//this refers to setSpeed() function...needs to be called at least once before ddirection change
+		if (this->readSpeed() == speedMap[SPEED_ZERO]) this->setSpeed(speedMap[INITIAL_SPEED]);
+	}
 	if ((millis() + STATE_TRANSITION_TIME_MS) >= _nextStateTransition ){
 		switch (_directionChangeState)
 		{
