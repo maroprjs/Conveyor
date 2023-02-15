@@ -26,7 +26,7 @@ struct ButtonStatus {
 	uint16_t fwdRvsClicked : 1;
 	uint16_t speedClicked : 1;
 	uint16_t onOffSwitchActive : 1;
-	uint16_t placeholder1 : 1;
+	uint16_t emergReleased : 1;
 	uint16_t placeholder2 : 1;
 	uint16_t placeholder3 : 1;
 	uint16_t placeholder11 : 1;

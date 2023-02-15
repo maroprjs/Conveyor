@@ -28,7 +28,7 @@ ConveyorUI::ConveyorUI(Modem* modem, Conveyor* conveyor, SignalLight* signalLigh
 	_raspberry = raspberry;
 	_flipFlop = false;
 	_emergencyActive = false;
-    _btnStatus.placeholder1 = 0;
+    //_btnStatus.placeholder1 = 0; now used for emergReleased
     _btnStatus.placeholder2 = 0;
     _btnStatus.placeholder3 = 0;
     _btnStatus.placeholder11 = 0;
@@ -411,6 +411,7 @@ void ConveyorUI::handleButtonActions(){
     _btnStatus.fwdRvsClicked = fwdRvsClicked;
     _btnStatus.speedClicked = speedClicked;
     _btnStatus.onOffSwitchActive = onOffSwitchActive;
+    _btnStatus.emergReleased = emergReleased;
 
 
 
@@ -435,7 +436,7 @@ void ConveyorUI::handleButtonActions(){
 		_conveyor->electronicsPwrOnReq();
 		_emergencyActive = false;
 		if (emergActive == true) _signalLight->redOff();
-		//_elapsedPublishTime = 0; //that will make next if condition true immediately, report to GUI <==no need to report immediately, "active" flag reported periodically
+		_elapsedPublishTime = 0; //that will make next if condition true immediately, report to GUI <==no need to report immediately, "active" flag reported periodically
 	};
 
 	if (_emergencyActive == false){ //disable conveyor control: TODO: make better design!
